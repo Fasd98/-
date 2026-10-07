@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>活性炭实验室计算工作簿</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', Roboto, sans-serif;
+  background: #eef2f7; color: #1e2b3c; padding: 20px 16px;
+  min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+}
+
+/* ============ 已输入数据高亮 ============ */
+input.cell-input.filled {
+  background: #fffbe6;
+  border-color: #f0d68a;
+}
+input.cell-input.filled:focus {
+  background: #fffef5;
+  border-color: #1e7e9c;
+}
+
+/* ============ 登录遮罩层 ============ */
+#loginOverlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: linear-gradient(135deg, #0b2a3b 0%, #156d88 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+#loginOverlay.hidden { display: none; }
+.login-card {
+  background: #ffffff; border-radius: 22px;
+  box-shadow: 0 24px 60px rgba(0, 20, 30, 0.35);
+  padding: 40px 44px 36px;
+  max-width: 420px; width: 100%;
+  text-align: center;
+  animation: fadeIn 0.35s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.login-icon {
+  font-size: 3rem; line-height: 1; margin-bottom: 14px;
+}
+.login-card h2 {
+  font-size: 1.4rem; font-weight: 700; color: #0b2a3b; margin-bottom: 8px;
+}
+.login-card p {
+  font-size: 0.85rem; color: #5b6f82; margin-bottom: 26px;
+}
+.login-card input {
+  width: 100%; padding: 14px 18px; border: 1.5px solid #cbdae6;
+  border-radius: 12px; font-size: 1rem; font-family: inherit;
+  text-align: center; letter-spacing: 3px;
+  transition: 0.15s; color: #0a2a3b; margin-bottom: 14px;
+}
+.login-card input:focus {
+  border-color: #1e7e9c; box-shadow: 0 0 0 3px rgba(30,126,156,0.15); outline: none;
+}
+.login-card button {
+  width: 100%; padding: 14px; border: none; border-radius: 12px;
+  background: #1e7e9c; color: white; font-size: 1rem; font-weight: 700;
+  font-family: inherit; cursor: pointer; transition: 0.18s;
+  box-shadow: 0 6px 16px rgba(30,126,156,0.3);
+}
+.login-card button:hover { background: #156d88; transform: translateY(-1px); }
+.login-card button:active { transform: translateY(1px); }
+.login-error {
+  color: #c62828; font-size: 0.82rem; min-height: 20px;
+  margin-top: 10px; font-weight: 600;
+}
+.login-hint {
+  margin-top: 20px; font-size: 0.72rem; color: #9aabb9;
+}
+
+/* ============ 工作簿 ============ */
+.workbook {
+  max-width: 1500px; width: 100%; background: #ffffff;
+  border-radius: 20px; box-shadow: 0 12px 40px rgba(0, 20, 30, 0.10);
+  overflow: hidden;
+}
+.workbook-header {
+  padding: 22px 32px 16px;
+  background: linear-gradient(135deg, #1e7e9c 0%, #156d88 100%);
+  color: white;
+}
+.workbook-header h1 {
+  font-size: 1.6rem; font-weight: 600;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.workbook-header h1 small {
+  font-size: 0.8rem; font-weight: 400;
+  background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px;
+}
+.workbook-header p {
+  font-size: 0.85rem; opacity: 0.85; margin-top: 6px;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.logout-btn {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35);
+  color: white; padding: 5px 14px; border-radius: 20px; font-size: 0.78rem;
+  font-weight: 600; cursor: pointer; transition: 0.15s; font-family: inherit;
+}
+.logout-btn:hover { background: rgba(255,255,255,0.3); }
+.tab-bar {
+  display: flex; background: #e6f0f8; padding: 0 16px;
+  gap: 2px; border-bottom: 2px solid #c2d6e6;
+  overflow-x: auto; scrollbar-width: thin;
+}
+.tab {
+  padding: 14px 20px; background: transparent; border: none;
+  cursor: pointer; font-weight: 600; color: #5b6f82;
+  border-bottom: 3px solid transparent; font-family: inherit;
+  font-size: 0.88rem; white-space: nowrap; transition: all 0.15s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.tab:hover { background: #f0f6fc; color: #0b2a3b; }
+.tab.active {
+  background: #ffffff; color: #0b2a3b;
+  border-bottom-color: #1e7e9c;
+}
+.tab .icon { font-size: 1rem; }
+.sheet-body { padding: 24px 28px 32px; }
+.sheet { display: none; }
+.sheet.active { display: block; }
+
+/* ======================== 通用组件 ======================== */
+.subhead {
+  font-size: 0.9rem; color: #5b6f82; margin-bottom: 20px;
+  border-left: 4px solid #1e7e9c; background: #f0f6fc;
+  border-radius: 0 8px 8px 0; padding: 10px 16px;
+}
+.formula-badge {
+  background: #e1f0fa; color: #0a4b66; font-size: 0.88rem;
+  padding: 14px 22px; border-radius: 12px; margin-bottom: 24px;
+  display: inline-block; border: 1px solid #b9d9ef; font-weight: 500; line-height: 2;
+}
+.formula-badge code {
+  background: #ffffffc0; padding: 3px 10px; border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+  margin: 0 3px; font-weight: 600; color: #0a4b66;
+}
+.std-tag {
+  display: inline-block; background: #dbeafe; color: #1e4b63;
+  font-size: 0.7rem; padding: 2px 8px; border-radius: 20px;
+  margin-left: 4px; vertical-align: middle; font-weight: 600;
+  border: 1px solid #b9cede;
+}
+.kbd-hint {
+  background: #eef3f9; color: #2b5876; font-size: 0.76rem;
+  padding: 8px 16px; border-radius: 12px; margin-bottom: 14px;
+  display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  border: 1px solid #d9e4ef;
+}
+.kbd-hint kbd {
+  background: #ffffff; border: 1px solid #b9cede; border-bottom-width: 2px;
+  border-radius: 6px; padding: 2px 8px; font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem; color: #1e4b63;
+}
+.params-grid {
+  display: flex; flex-wrap: wrap; gap: 20px 28px;
+  background: #f8fafd; border-radius: 18px; padding: 20px 28px;
+  margin-bottom: 24px; border: 1px solid #d9e4ef; align-items: flex-end;
+}
+.param-item { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
+.param-item label {
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.3px; color: #3d5a73;
+}
+.param-item label.label-red { color: #d32f2f; font-weight: 800; font-size: 0.85rem; }
+.param-item label.label-red .unit { color: #d32f2f; font-weight: 700; }
+.param-item .unit { font-size: 0.7rem; color: #7a8e9e; font-weight: 400; margin-left: 4px; }
+.param-item input {
+  padding: 10px 14px; border: 1.5px solid #cbdae6; border-radius: 12px;
+  font-size: 1rem; font-weight: 500; font-family: inherit; background: #ffffff;
+  transition: 0.15s; width: 100%; color: #0a2a3b;
+}
+.param-item input:focus { border-color: #1e7e9c; box-shadow: 0 0 0 3px rgba(30,126,156,0.15); outline: none; }
+.param-item input[readonly] { background: #edf3f8; color: #1d4b63; font-weight: 600; border-color: #b9cede; }
+.hint-icon {
+  display: inline-block; width: 16px; height: 16px; background: #cad9e8; color: #1b4a63;
+  border-radius: 50%; font-size: 11px; text-align: center; line-height: 16px;
+  font-weight: 700; margin-left: 5px; cursor: help;
+}
+.table-wrap {
+  overflow-x: auto; margin-bottom: 16px; border-radius: 14px;
+  border: 1px solid #dde7f0; background: #ffffff;
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+thead { background: #e6f0f8; color: #183e53; font-weight: 600; font-size: 0.78rem; letter-spacing: 0.3px; text-transform: uppercase; }
+th { padding: 12px 8px; text-align: left; border-bottom: 2px solid #c2d6e6; white-space: nowrap; }
+td { padding: 5px 6px; border-bottom: 1px solid #e6edf5; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #f2f9ff; }
+.row-index { font-weight: 600; color: #4a657b; font-size: 0.78rem; width: 45px; text-align: center; }
+input.cell-input {
+  width: 100%; padding: 8px 9px; border: 1.5px solid #e0e9f2; border-radius: 9px;
+  font-size: 0.85rem; font-family: inherit; background: #ffffff;
+  transition: 0.12s; color: #152f40; text-align: right;
+}
+input.cell-input:focus { border-color: #1e7e9c; box-shadow: 0 0 0 2px rgba(30,126,156,0.1); outline: none; background: #fafdff; }
+input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e6e; border-color: #c5d9ea; }
+.result-cell { font-weight: 700; font-size: 0.92rem; text-align: right; padding-right: 12px; white-space: nowrap; }
+.result-cell.empty { color: #9aabb9; font-weight: 400; }
+.result-cell.high { color: #c62828; }
+.result-cell.low { color: #0b6b3a; }
+.result-cell.moisture { color: #1565c0; }
+.result-cell.volatile { color: #6a1b9a; }
+.result-cell.ash { color: #8b4513; }
+.result-cell.fixedcarbon { color: #0b6b3a; }
+.result-cell.bulk { color: #0b6b3a; }
+.result-cell.strength { color: #0b6b3a; }
+.result-cell.pass { color: #0b6b3a; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; justify-content: flex-end; }
+.btn {
+  padding: 10px 22px; border-radius: 40px; border: none; font-size: 0.88rem;
+  font-weight: 600; font-family: inherit; cursor: pointer; transition: 0.18s;
+  display: inline-flex; align-items: center; gap: 7px;
+  background: #ffffff; border: 1.5px solid #c6d7e6; color: #1f4c63;
+}
+.btn-primary { background: #1e7e9c; border: 1.5px solid #1e7e9c; color: white; box-shadow: 0 5px 14px rgba(30,126,156,0.25); }
+.btn-primary:hover { background: #156d88; border-color: #156d88; transform: translateY(-1px); }
+.btn-secondary:hover { background: #eaf3fb; border-color: #9bbcd4; }
+.btn:active { transform: translateY(1px); }
+.btn-sm { padding: 8px 18px; font-size: 0.82rem; }
+.footnote {
+  margin-top: 24px; font-size: 0.78rem; color: #6b7f8f; line-height: 1.6;
+  border-top: 1px solid #e1eaf2; padding-top: 16px;
+  display: flex; flex-wrap: wrap; justify-content: space-between;
+  align-items: center; gap: 12px;
+}
+.stat-badge {
+  background: #eef3f9; padding: 6px 14px; border-radius: 30px;
+  font-size: 0.76rem; font-weight: 500; color: #2b5876;
+}
+.section { border-radius: 20px; padding: 22px 24px; margin-bottom: 24px; border: 2px solid; }
+.section-high { background: #fff5f5; border-color: #f5c6c6; }
+.section-low { background: #f0faf4; border-color: #b8e0c8; }
+.section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.section-title { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.section-high .section-title { color: #c62828; }
+.section-low .section-title { color: #0b6b3a; }
+.section-desc { font-size: 0.8rem; color: #5b6f82; flex: 1; min-width: 200px; }
+.badge-count {
+  background: #ffffff; padding: 4px 14px; border-radius: 30px;
+  font-size: 0.76rem; font-weight: 600;
+}
+.section-high .badge-count { color: #c62828; border: 1px solid #f5c6c6; }
+.section-low .badge-count { color: #0b6b3a; border: 1px solid #b8e0c8; }
+.estimator-box { background: #ffffff; border: 1px solid #f5c6c6; border-radius: 14px; padding: 16px 20px; margin-bottom: 18px; }
+.estimator-box h4 { font-size: 0.92rem; font-weight: 600; color: #c62828; margin-bottom: 12px; }
+.estimator-row { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; }
+.estimator-result {
+  margin-top: 12px; font-size: 1.05rem; font-weight: 700; color: #c62828;
+  background: #fff0f0; padding: 10px 16px; border-radius: 10px;
+  display: inline-block; min-width: 260px;
+}
+.estimator-result span { font-weight: 400; color: #3d5a73; font-size: 0.85rem; }
+.tag-auto {
+  display: inline-block; background: #a8d9bd; color: #0b6b3a;
+  font-size: 0.68rem; padding: 1px 8px; border-radius: 20px;
+  margin-left: 6px; vertical-align: middle;
+}
+@media (max-width: 800px) {
+  .tab { padding: 12px 14px; font-size: 0.8rem; }
+  .sheet-body { padding: 16px 12px 24px; }
+  .workbook-header { padding: 18px 20px 12px; }
+  .workbook-header h1 { font-size: 1.25rem; }
+  .params-grid { flex-direction: column; gap: 14px; padding: 16px; }
+  .param-item { min-width: 100%; }
+  .login-card { padding: 30px 24px 26px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ 密码登录遮罩 ============ -->
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="login-icon">🔒</div>
+    <h2>活性炭实验室计算工作簿</h2>
+    <p>请输入访问密码</p>
+    <input type="password" id="passwordInput" placeholder="请输入密码" autocomplete="off" autofocus>
+    <button id="loginBtn">进入工作簿</button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-hint">仅供实验室内部使用</div>
+  </div>
+</div>
+
+<!-- ============ 工作簿 ============ -->
+<div class="workbook" id="workbook" style="display:none;">
+  <div class="workbook-header">
+    <h1>🧪 活性炭实验室计算工作簿 <small>共 7 个功能表</small></h1>
+    <p>
+      <span>点击标签切换功能，所有数据自动保存到本地浏览器。已填输入框显示浅黄底色。</span>
+      <button class="logout-btn" id="logoutBtn">🔒 锁定</button>
+    </p>
+  </div>
+
+  <div class="tab-bar" id="tabBar">
+    <button class="tab active" data-sheet="coal"><span class="icon">⚫</span>煤制活性炭碘值</button>
+    <button class="tab" data-sheet="wood"><span class="icon">🌾</span>木质活性炭碘值</button>
+    <button class="tab" data-sheet="carbon"><span class="icon">🔥</span>炭化料工业分析</button>
+    <button class="tab" data-sheet="ctc"><span class="icon">💨</span>四氯化碳吸附率</button>
+    <button class="tab" data-sheet="strength"><span class="icon">💪</span>活性炭强度</button>
+    <button class="tab" data-sheet="ash"><span class="icon">🧯</span>活性炭灰分</button>
+    <button class="tab" data-sheet="moisture"><span class="icon">💧</span>水分与表观密度</button>
+  </div>
+
+  <div class="sheet-body">
+
+    <!-- 工作表 1：煤制活性炭碘值 -->
+    <div class="sheet active" id="sheet-coal">
+      <div class="subhead">
+        依据 <strong>GB/T 7702.7—2023</strong>《煤质颗粒活性炭试验方法 第7部分：碘吸附值的测定》。碘值 &gt;600 与 &lt;600 分开结算，估算自动计算，结果保留整数。
+      </div>
+      <div class="formula-badge">
+        📐 公式(1) m = <code>[c₁·100 − 0.02·(100+10)]M / E₀</code>
+        <span class="std-tag">自动估算 &gt;600 称取质量（V₁=100, V₂=10, c=0.02, M=126.93）</span><br>
+        公式(3) X = <code>(c₁V₁ − (V₁+V₂)/V · c₂V₃) · M</code> | 公式(4) E = <code>X / m</code><br>
+        <span style="color:#c62828; font-weight:600;">🔴 &gt;600：V₁=100，V₂=10，V=50</span>
+        &nbsp;|&nbsp;
+        <span style="color:#0b6b3a; font-weight:600;">🟢 &lt;600：V₁=50，V₂=10，V=25</span>
+      </div>
+      <div class="params-grid">
+        <div class="param-item">
+          <label>碘液浓度 c₁ <span class="unit">mol/L</span></label>
+          <input type="number" id="coal-c1" step="0.0001" min="0" value="0.1000" autocomplete="off">
+        </div>
+        <div class="param-item">
+          <label>硫代硫酸钠浓度 c₂ <span class="unit">mol/L</span></label>
+          <input type="number" id="coal-c2" step="0.0001" min="0" value="0.1000" autocomplete="off">
+        </div>
+        <div class="param-item">
+          <label>碘摩尔质量 M <span class="unit">g/mol</span></label>
+          <input type="number" id="coal-M" step="0.01" value="126.93" readonly>
+        </div>
+      </div>
+
+      <div class="section section-high">
+        <div class="section-header">
+          <div class="section-title">🔴 碘值 &gt; 600 mg/g</div>
+          <div class="section-desc">固定 10 mL 盐酸、100 mL 碘液、滤液 50 mL。输入估计碘值自动估算称取质量。</div>
+          <span class="badge-count" id="coal-countHigh">0 / 35 已填写</span>
+        </div>
+        <div class="estimator-box">
+          <h4>📐 输入估计碘值，自动估算称取质量 m（公式1）</h4>
+          <div class="estimator-row">
+            <div class="param-item">
+              <label>估计碘吸附值 E₀ <span class="unit">mg/g</span></label>
+              <input type="number" id="coal-E0" step="1" min="600" value="700" autocomplete="off">
+            </div>
+            <div class="estimator-result" id="coal-massResult">称取质量 m = <span>—</span> g</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:45px;">#</th>
+                <th style="width:160px;">样品重量 m (g)</th>
+                <th style="width:180px;">消耗硫代硫酸钠 V₃ (mL)</th>
+                <th style="width:160px;">碘值 E (mg/g)</th>
+              </tr>
+            </thead>
+            <tbody id="coal-tbodyHigh"></tbody>
+          </table>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary btn-sm" id="coal-clearHighBtn">🗑️ 清空</button>
+          <button class="btn btn-secondary btn-sm" id="coal-exportHighBtn">📥 导出CSV</button>
+          <button class="btn btn-primary btn-sm" id="coal-recalcHighBtn">🔄 重新计算</button>
+        </div>
+      </div>
+
+      <div class="section section-low">
+        <div class="section-header">
+          <div class="section-title">🟢 碘值 &lt; 600 mg/g</div>
+          <div class="section-desc">固定 10 mL 盐酸、50 mL 碘液、滤液 25 mL。直接称取适量试样，滴定后计算。</div>
+          <span class="badge-count" id="coal-countLow">0 / 35 已填写</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:45px;">#</th>
+                <th style="width:160px;">样品重量 m (g)</th>
+                <th style="width:180px;">消耗硫代硫酸钠 V₃ (mL)</th>
+                <th style="width:160px;">碘值 E (mg/g)</th>
+              </tr>
+            </thead>
+            <tbody id="coal-tbodyLow"></tbody>
+          </table>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary btn-sm" id="coal-clearLowBtn">🗑️ 清空</button>
+          <button class="btn btn-secondary btn-sm" id="coal-exportLowBtn">📥 导出CSV</button>
+          <button class="btn btn-primary btn-sm" id="coal-recalcLowBtn">🔄 重新计算</button>
+        </div>
+      </div>
+
+      <div class="footnote">
+        <span>⚗️ GB/T 7702.7—2023 · M = 126.93 g/mol · 结果保留整数 · 数据自动保存</span>
+        <span class="stat-badge" id="coal-statInfo">共 70 个样品位</span>
+      </div>
+    </div>
+
+    <!-- 工作表 2：木质活性炭碘值 -->
+    <div class="sheet" id="sheet-wood">
+      <div class="subhead">依据 GB/T 12496.8-2015 标准，自动根据剩余浓度 c 查表填写校正因子 D，结果保留整数。</div>
+      <div class="formula-badge">
+        📐 碘吸附值 A = (X/M) · D | X/M = <code>5(10c₁ - 1.2c₂V₂) × 126.93 / m</code> | c = <code>c₂V₂ / 10</code>
+      </div>
+      <div class="params-grid">
+        <div class="param-item">
+          <label class="label-red">碘液浓度 c₁ (1/2 I₂) <span class="unit">mol/L</span></label>
+          <input type="number" id="wood-iodineConc" step="0.0001" min="0" placeholder="例如 0.1000" autocomplete="off">
+        </div>
+        <div class="param-item">
+          <label class="label-red">硫代硫酸钠浓度 c₂ <span class="unit">mol/L</span></label>
+          <input type="number" id="wood-thioConc" step="0.0001" min="0" placeholder="例如 0.1000" autocomplete="off">
+        </div>
+      </div>
+      <div class="kbd-hint">
+        <span>⌨️ <kbd>↑</kbd><kbd>↓</kbd> 上下移动</span>
+        <span><kbd>Enter</kbd> 下一个</span>
+        <span><kbd>Shift</kbd>+<kbd>Enter</kbd> 上一个</span>
+      </div>
+      <div class="table-wrap">
+        <table style="min-width:850px;">
+          <thead>
+            <tr>
+              <th style="width:50px;">#</th>
+              <th style="width:130px;">样品重量 m (g)</th>
+              <th style="width:140px;">硫代消耗 V₂ (mL)</th>
+              <th style="width:140px;">剩余浓度 c (mol/L)</th>
+              <th style="width:140px;">校正因子 D <span class="tag-auto">自动</span></th>
+              <th style="width:140px;">碘值 A (mg/g)</th>
+            </tr>
+          </thead>
+          <tbody id="wood-tbody"></tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" id="wood-clearAllBtn">🗑️ 清空样品</button>
+        <button class="btn btn-secondary" id="wood-exportBtn">📥 导出CSV</button>
+        <button class="btn btn-primary" id="wood-recalcBtn">🔄 重新计算</button>
+      </div>
+      <div class="footnote">
+        <span>⚗️ GB/T 12496.8-2015 · D 值自动查表（0.0020 ~ 0.0500 mol/L）· 结果保留整数</span>
+        <span class="stat-badge" id="wood-statInfo">35 个样品位</span>
+      </div>
+    </div>
+
+    <!-- 工作表 3：炭化料工业分析 -->
+    <div class="sheet" id="sheet-carbon">
+      <div class="subhead">根据样品烘干、灼烧前后的重量变化计算水分、挥发分、灰分及固定碳含量。</div>
+      <div class="formula-badge">
+        📐 水分 = <code>(初始重量 − 烘干重量) / 初始重量 × 100%</code> <span class="std-tag">GB/T 12496.4</span>
+        | 挥发分 = <code>(m₂ + m₁ − m₃) / m₂ × 100%</code><br>
+        灰分 = <code>(m₄ − m₁) / m₂ × 100%</code> <span class="std-tag">GB/T 12496.3</span>
+        | 固定碳 = <code>100% − 水分% − 挥发分% − 灰分%</code>
+      </div>
+      <div class="kbd-hint">
+        <span>⌨️ <kbd>↑</kbd><kbd>↓</kbd> 上下移动</span>
+        <span><kbd>Enter</kbd> 下一个</span>
+        <span><kbd>Shift</kbd>+<kbd>Enter</kbd> 上一个</span>
+      </div>
+      <div class="table-wrap">
+        <table style="min-width:1350px;">
+          <thead>
+            <tr>
+              <th style="width:45px;">#</th>
+              <th style="width:110px;">初始重量 (g)</th>
+              <th style="width:110px;">烘干重量 (g)</th>
+              <th style="width:120px;">空坩埚 m₁ (g)</th>
+              <th style="width:110px;">克重 m₂ (g)</th>
+              <th style="width:120px;">灼烧后 m₃ (g)</th>
+              <th style="width:120px;">4h后 m₄ (g)</th>
+              <th style="width:100px;">水分 (%)</th>
+              <th style="width:100px;">挥发分 (%)</th>
+              <th style="width:100px;">灰分 (%)</th>
+              <th style="width:110px;">固定碳 (%)</th>
+            </tr>
+          </thead>
+          <tbody id="carbon-tbody"></tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" id="carbon-clearAllBtn">🗑️ 清空样品</button>
+        <button class="btn btn-secondary" id="carbon-exportBtn">📥 导出CSV</button>
+        <button class="btn btn-primary" id="carbon-recalcBtn">🔄 重新计算</button>
+      </div>
+      <div class="footnote">
+        <span>⚗️ 水分：GB/T 12496.4 · 灰分：GB/T 12496.3</span>
+        <span class="stat-badge" id="carbon-statInfo">35 个样品位</span>
+      </div>
+    </div>
+
+    <!-- 工作表 4：四氯化碳吸附率 -->
+    <div class="sheet" id="sheet-ctc">
+      <div class="subhead">依据 <strong>GB/T 12496.5-1999</strong>《木质活性炭试验方法 四氯化碳吸附率（活性）的测定》。</div>
+      <div class="formula-badge">
+        📐 四氯化碳吸附率 A = <code>(m₄ − m₃) / (m₂ − m₁) × 100%</code>
+        <span class="std-tag">GB/T 12496.5</span><br>
+        <span style="font-size:0.82rem; opacity:0.75;">m₁ 空管质量 · m₂ 加炭后重量 · m₃ 涂抹凡士林后质量 · m₄ 吸附后质量</span>
+      </div>
+      <div class="kbd-hint">
+        <span>⌨️ <kbd>↑</kbd><kbd>↓</kbd> 上下移动</span>
+        <span><kbd>Enter</kbd> 下一个</span>
+        <span><kbd>Shift</kbd>+<kbd>Enter</kbd> 上一个</span>
+      </div>
+      <div class="table-wrap">
+        <table style="min-width:1100px;">
+          <thead>
+            <tr>
+              <th style="width:45px;">#</th>
+              <th style="width:140px;">空管质量 m₁ (g)</th>
+              <th style="width:150px;">加炭后重量 m₂ (g)</th>
+              <th style="width:170px;">涂抹凡士林后质量 m₃ (g)</th>
+              <th style="width:150px;">吸附后质量 m₄ (g)</th>
+              <th style="width:130px;">吸附率 A (%)</th>
+            </tr>
+          </thead>
+          <tbody id="ctc-tbody"></tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" id="ctc-clearAllBtn">🗑️ 清空样品</button>
+        <button class="btn btn-secondary" id="ctc-exportBtn">📥 导出CSV</button>
+        <button class="btn btn-primary" id="ctc-recalcBtn">🔄 重新计算</button>
+      </div>
+      <div class="footnote">
+        <span>⚗️ GB/T 12496.5-1999</span>
+        <span class="stat-badge" id="ctc-statInfo">35 个样品位</span>
+      </div>
+    </div>
+
+    <!-- 工作表 5：活性炭强度 -->
+    <div class="sheet" id="sheet-strength">
+      <div class="subhead">依据 <strong>GB/T 12496.6-1999</strong>《木质活性炭试验方法 强度的测定》。</div>
+      <div class="formula-badge">
+        📐 强度 W = <code>(m₂ / m₁) × 100%</code> <span class="std-tag">GB/T 12496.6</span><br>
+        <span style="font-size:0.82rem; opacity:0.75;">m₁ 50mL试样重量（球磨前） · m₂ 过筛后重量（球磨后保留在筛层上的试样质量）</span>
+      </div>
+      <div class="kbd-hint">
+        <span>⌨️ <kbd>↑</kbd><kbd>↓</kbd> 上下移动</span>
+        <span><kbd>Enter</kbd> 下一个</span>
+        <span><kbd>Shift</kbd>+<kbd>Enter</kbd> 上一个</span>
+      </div>
+      <div class="table-wrap">
+        <table style="min-width:750px;">
+          <thead>
+            <tr>
+              <th style="width:55px;">#</th>
+              <th style="width:200px;">50mL试样重量 m₁ (g)</th>
+              <th style="width:200px;">过筛后重量 m₂ (g)</th>
+              <th style="width:140px;">强度 W (%)</th>
+            </tr>
+          </thead>
+          <tbody id="strength-tbody"></tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" id="strength-clearAllBtn">🗑️ 清空样品</button>
+        <button class="btn btn-secondary" id="strength-exportBtn">📥 导出CSV</button>
+        <button class="btn btn-primary" id="strength-recalcBtn">🔄 重新计算</button>
+      </div>
+      <div class="footnote">
+        <span>⚗️ GB/T 12496.6-1999</span>
+        <span class="stat-badge" id="strength-statInfo">35 个样品位</span>
+      </div>
+    </div>
+
+    <!-- 工作表 6：活性炭灰分 -->
+    <div class="sheet" id="sheet-ash">
+      <div class="subhead">依据 <strong>GB/T 12496.3-1999</strong>《木质活性炭试验方法 灰分含量的测定》。</div>
+      <div class="formula-badge">
+        📐 灰分含量 = <code>(m₃ − m₁) / m × 100%</code> <span class="std-tag">GB/T 12496.3</span><br>
+        <span style="font-size:0.82rem; opacity:0.75;">m₁ 空坩埚重量 · m₃ 灼烧后坩埚+灰分重量 · m 样品重量</span>
+      </div>
+      <div class="kbd-hint">
+        <span>⌨️ <kbd>↑</kbd><kbd>↓</kbd> 上下移动</span>
+        <span><kbd>Enter</kbd> 下一个</span>
+        <span><kbd>Shift</kbd>+<kbd>Enter</kbd> 上一个</span>
+      </div>
+      <div class="table-wrap">
+        <table style="min-width:850px;">
+          <thead>
+            <tr>
+              <th style="width:55px;">#</th>
+              <th style="width:160px;">空坩埚重量 m₁ (g)</th>
+              <th style="width:150px;">样品重量 m (g)</th>
+              <th style="width:170px;">灼烧后坩埚+灰分 m₃ (g)</th>
+              <th style="width:140px;">灰分含量 (%)</th>
+            </tr>
+          </thead>
+          <tbody id="ash-tbody"></tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" id="ash-clearAllBtn">🗑️ 清空样品</button>
+        <button class="btn btn-secondary" id="ash-exportBtn">📥 导出CSV</button>
+        <button class="btn btn-primary" id="ash-recalcBtn">🔄 重新计算</button>
+      </div>
+      <div class="footnote">
+        <span>⚗️ GB/T 12496.3-1999</span>
+        <span class="stat-badge" id="ash-statInfo">35 个样品位</span>
+      </div>
+    </div>
+
+    <!-- 工作表 7：水分与表观密度 -->
+    <div class="sheet" id="sheet-moisture">
+      <div class="subhead">
+        水分依据 <strong>GB/T 12496.4-1999</strong>；表观密度依据 <strong>GB/T 12496.1-1999</strong>。
+      </div>
+      <div class="formula-badge">
+        📐 水分含量 = <code>(m₀ − m₁) / m₀ × 100%</code> <span class="std-tag">GB/T 12496.4</span>
+        | 表观密度 = <code>100ml重量 × (1 − 水分%) / 100</code> <span class="std-tag">GB/T 12496.1</span>
+      </div>
+      <div class="kbd-hint">
+        <span>⌨️ <kbd>↑</kbd><kbd>↓</kbd> 上下移动</span>
+        <span><kbd>Enter</kbd> 下一个</span>
+        <span><kbd>Shift</kbd>+<kbd>Enter</kbd> 上一个</span>
+      </div>
+      <div class="table-wrap">
+        <table style="min-width:950px;">
+          <thead>
+            <tr>
+              <th style="width:55px;">#</th>
+              <th style="width:160px;">初始重量 m₀ (g)</th>
+              <th style="width:160px;">烘干重量 m₁ (g)</th>
+              <th style="width:130px;">水分含量 (%)</th>
+              <th style="width:150px;">100ml重量 (g)</th>
+              <th style="width:150px;">表观密度 (g/mL)</th>
+            </tr>
+          </thead>
+          <tbody id="moisture-tbody"></tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" id="moisture-clearAllBtn">🗑️ 清空样品</button>
+        <button class="btn btn-secondary" id="moisture-exportBtn">📥 导出CSV</button>
+        <button class="btn btn-primary" id="moisture-recalcBtn">🔄 重新计算</button>
+      </div>
+      <div class="footnote">
+        <span>⚗️ 水分：GB/T 12496.4-1999 · 表观密度：GB/T 12496.1-1999</span>
+        <span class="stat-badge" id="moisture-statInfo">35 个样品位</span>
+      </div>
+    </div>
+
+  </div><!-- /.sheet-body -->
+</div><!-- /.workbook -->
+
+<script>
+// ============================================================
+// 密码保护
+// ============================================================
+(function() {
+  // ⚙️ 在此修改访问密码
+  const ACCESS_PASSWORD = 'fhthys';
+  const AUTH_KEY = 'lab_workbook_auth_v1';
+
+  const overlay = document.getElementById('loginOverlay');
+  const workbook = document.getElementById('workbook');
+  const pwdInput = document.getElementById('passwordInput');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginError = document.getElementById('loginError');
+
+  function showWorkbook() {
+    overlay.classList.add('hidden');
+    workbook.style.display = 'block';
+  }
+  function showLogin() {
+    overlay.classList.remove('hidden');
+    workbook.style.display = 'none';
+    pwdInput.value = '';
+    loginError.textContent = '';
+    setTimeout(() => pwdInput.focus(), 100);
+  }
+
+  function tryLogin() {
+    const pwd = pwdInput.value;
+    if (pwd === ACCESS_PASSWORD) {
+      try { sessionStorage.setItem(AUTH_KEY, '1'); } catch(e) {}
+      showWorkbook();
+    } else {
+      loginError.textContent = '❌ 密码错误，请重试';
+      pwdInput.value = '';
+      pwdInput.focus();
+      pwdInput.style.transition = 'transform 0.06s';
+      let n = 0;
+      const shake = setInterval(() => {
+        pwdInput.style.transform = (n % 2 === 0) ? 'translateX(-6px)' : 'translateX(6px)';
+        if (++n >= 6) { clearInterval(shake); pwdInput.style.transform = 'translateX(0)'; }
+      }, 60);
+    }
+  }
+
+  loginBtn.addEventListener('click', tryLogin);
+  pwdInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') tryLogin();
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    try { sessionStorage.removeItem(AUTH_KEY); } catch(e) {}
+    showLogin();
+  });
+
+  let authed = false;
+  try { authed = sessionStorage.getItem(AUTH_KEY) === '1'; } catch(e) {}
+  if (authed) {
+    showWorkbook();
+  } else {
+    showLogin();
+  }
+})();
+
+// ============================================================
+// 通用工具：localStorage 安全包装
+// ============================================================
+const LS = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+  del(k) { try { localStorage.removeItem(k); } catch(e){} }
+};
+
+// 键盘导航工厂
+function makeKeyboardNavigator(getInput, rowCount, cols) {
+  return function(e, rowIndex, colIndex) {
+    let tr = rowIndex, tc = colIndex, handled = false;
+    if (e.key === 'ArrowDown') { tr = rowIndex + 1; handled = true; }
+    else if (e.key === 'ArrowUp') { tr = rowIndex - 1; handled = true; }
+    else if (e.key === 'Enter') {
+      if (e.shiftKey) {
+        if (colIndex === 0) { tr = rowIndex - 1; tc = cols - 1; }
+        else { tc = colIndex - 1; }
+      } else {
+        if (colIndex === cols - 1) { tr = rowIndex + 1; tc = 0; }
+        else { tc = colIndex + 1; }
+      }
+      handled = true;
+    }
+    if (!handled) return;
+    if (tr < 0 || tr >= rowCount) { e.preventDefault(); return; }
+    const el = getInput(tr, tc);
+    if (!el) { e.preventDefault(); return; }
+    e.preventDefault();
+    el.focus();
+    el.select();
+  };
+}
+
+// 工作表切换
+(function() {
+  const tabs = document.querySelectorAll('.tab');
+  const sheets = document.querySelectorAll('.sheet');
+  const ACTIVE_KEY = 'active_sheet_v1';
+
+  function activate(name) {
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.sheet === name));
+    sheets.forEach(s => s.classList.toggle('active', s.id === 'sheet-' + name));
+    LS.set(ACTIVE_KEY, name);
+  }
+
+  tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.sheet)));
+
+  const saved = LS.get(ACTIVE_KEY);
+  if (saved && document.getElementById('sheet-' + saved)) activate(saved);
+})();
+
+// 通用下载 CSV 工具
+function downloadCSV(content, filename) {
+  const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  const now = new Date();
+  const ts = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+  link.download = `${filename}_${ts}.csv`;
+  link.href = url;
+  document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+/* ============================================================
+   工作表 1：煤制活性炭碘值 (GB/T 7702.7—2023)
+   ============================================================ */
+(function() {
+  const ROW_COUNT = 35;
+  const STORAGE_KEY = 'coal_iodine_gb7702_fixed_v3';
+  const HIGH_V1 = 100, HIGH_V2 = 10, HIGH_V = 50;
+  const LOW_V1 = 50,  LOW_V2 = 10, LOW_V = 25;
+
+  const $ = id => document.getElementById('coal-' + id);
+  const c1Input = $('c1'), c2Input = $('c2'), MInput = $('M'), E0Input = $('E0');
+  const massResult = $('massResult');
+  const tbodyHigh = $('tbodyHigh'), tbodyLow = $('tbodyLow');
+  const countHigh = $('countHigh'), countLow = $('countLow');
+  const statInfo = $('statInfo');
+
+  const rowHigh = [], rowLow = [];
+
+  function estimateMass() {
+    const c1 = parseFloat(c1Input.value), M = parseFloat(MInput.value), E0 = parseFloat(E0Input.value);
+    if (isNaN(c1) || isNaN(M) || isNaN(E0) || E0 <= 0) {
+      massResult.innerHTML = '称取质量 m = <span>等待输入</span>'; return;
+    }
+    const num = c1 * HIGH_V1 - 0.02 * (HIGH_V1 + HIGH_V2);
+    if (num <= 0) { massResult.innerHTML = '称取质量 m = <span>计算值为负</span>'; return; }
+    const m = (num * M) / E0;
+    massResult.innerHTML = `称取质量 m = <span>${m.toFixed(4)} g</span>`;
+  }
+
+  function computeIodine(kind, massStr, v3Str) {
+    if (massStr === '' || v3Str === '') return null;
+    const m = parseFloat(massStr), V3 = parseFloat(v3Str);
+    const c1 = parseFloat(c1Input.value), c2 = parseFloat(c2Input.value), M = parseFloat(MInput.value);
+    if (isNaN(m) || m <= 0 || isNaN(V3) || V3 < 0 || isNaN(c1) || isNaN(c2) || isNaN(M)) return { error: '参数无效' };
+    let V1, V2, V;
+    if (kind === 'high') { V1 = HIGH_V1; V2 = HIGH_V2; V = HIGH_V; }
+    else { V1 = LOW_V1; V2 = LOW_V2; V = LOW_V; }
+    const X = (c1 * V1 - (V1 + V2) / V * c2 * V3) * M;
+    if (X < 0) return { error: '负值' };
+    return { value: X / m };
+  }
+
+  function calculateRow(kind, idx) {
+    const rows = kind === 'high' ? rowHigh : rowLow;
+    const row = rows[idx]; if (!row) return;
+    const res = computeIodine(kind, row.mass.value.trim(), row.v3.value.trim());
+    if (res === null) {
+      row.resultCell.textContent = '—'; row.resultCell.classList.add('empty');
+      row.resultCell.classList.remove('high', 'low'); return;
+    }
+    if (res.error) {
+      row.resultCell.textContent = res.error; row.resultCell.classList.add('empty');
+      row.resultCell.classList.remove('high', 'low'); return;
+    }
+    // 保留整数
+    row.resultCell.textContent = Math.round(res.value).toString();
+    row.resultCell.classList.remove('empty');
+    if (kind === 'high') { row.resultCell.classList.add('high'); row.resultCell.classList.remove('low'); }
+    else { row.resultCell.classList.add('low'); row.resultCell.classList.remove('high'); }
+  }
+
+  function buildTable(kind, tbody, rows, countEl) {
+    tbody.innerHTML = ''; rows.length = 0;
+    const nav = makeKeyboardNavigator((r, c) => {
+      if (r < 0 || r >= ROW_COUNT) return null;
+      const rr = rows[r]; if (!rr) return null;
+      return c === 0 ? rr.mass : rr.v3;
+    }, ROW_COUNT, 2);
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const tr = document.createElement('tr');
+      const tdIdx = document.createElement('td'); tdIdx.className = 'row-index'; tdIdx.textContent = i + 1; tr.appendChild(tdIdx);
+
+      const tdMass = document.createElement('td');
+      const inMass = document.createElement('input');
+      inMass.type = 'number'; inMass.className = 'cell-input';
+      inMass.step = '0.0001'; inMass.min = '0'; inMass.placeholder = '例如 0.5000'; inMass.autocomplete = 'off';
+      tdMass.appendChild(inMass); tr.appendChild(tdMass);
+
+      const tdV3 = document.createElement('td');
+      const inV3 = document.createElement('input');
+      inV3.type = 'number'; inV3.className = 'cell-input';
+      inV3.step = '0.01'; inV3.min = '0'; inV3.placeholder = '例如 5.20'; inV3.autocomplete = 'off';
+      tdV3.appendChild(inV3); tr.appendChild(tdV3);
+
+      const tdRes = document.createElement('td');
+      tdRes.className = 'result-cell empty'; tdRes.textContent = '—'; tr.appendChild(tdRes);
+
+      tbody.appendChild(tr);
+      rows.push({ mass: inMass, v3: inV3, resultCell: tdRes });
+
+      inMass.addEventListener('input', () => { calculateRow(kind, i); updateCount(kind, countEl); saveData(); });
+      inV3.addEventListener('input', () => { calculateRow(kind, i); updateCount(kind, countEl); saveData(); });
+      inMass.addEventListener('keydown', e => nav(e, i, 0));
+      inV3.addEventListener('keydown', e => nav(e, i, 1));
+    }
+  }
+
+  function updateCount(kind, countEl) {
+    const rows = kind === 'high' ? rowHigh : rowLow;
+    let n = 0;
+    for (let i = 0; i < rows.length; i++) if (rows[i].mass.value.trim() !== '' && rows[i].v3.value.trim() !== '') n++;
+    countEl.textContent = `${n} / ${ROW_COUNT} 已填写`;
+  }
+
+  function updateStat() {
+    let h = 0, l = 0;
+    for (let i = 0; i < ROW_COUNT; i++) {
+      if (rowHigh[i] && rowHigh[i].mass.value.trim() !== '' && rowHigh[i].v3.value.trim() !== '') h++;
+      if (rowLow[i] && rowLow[i].mass.value.trim() !== '' && rowLow[i].v3.value.trim() !== '') l++;
+    }
+    statInfo.textContent = `>600：${h}/${ROW_COUNT} · <600：${l}/${ROW_COUNT}`;
+  }
+
+  function recalcAll(kind) {
+    const rows = kind === 'high' ? rowHigh : rowLow;
+    for (let i = 0; i < ROW_COUNT; i++) calculateRow(kind, i);
+    updateCount(kind, kind === 'high' ? countHigh : countLow);
+    updateStat();
+  }
+
+  function saveData() {
+    LS.set(STORAGE_KEY, {
+      c1: c1Input.value, c2: c2Input.value, E0: E0Input.value,
+      high: rowHigh.map(r => ({ mass: r.mass.value, v3: r.v3.value })),
+      low: rowLow.map(r => ({ mass: r.mass.value, v3: r.v3.value }))
+    });
+  }
+
+  function loadData() {
+    const data = LS.get(STORAGE_KEY); if (!data) return;
+    if (data.c1 !== undefined) c1Input.value = data.c1;
+    if (data.c2 !== undefined) c2Input.value = data.c2;
+    if (data.E0 !== undefined) E0Input.value = data.E0;
+    if (Array.isArray(data.high)) {
+      for (let i = 0; i < ROW_COUNT && i < data.high.length; i++) {
+        if (data.high[i] && rowHigh[i]) {
+          rowHigh[i].mass.value = data.high[i].mass || '';
+          rowHigh[i].v3.value = data.high[i].v3 || '';
+          calculateRow('high', i);
+        }
+      }
+    }
+    if (Array.isArray(data.low)) {
+      for (let i = 0; i < ROW_COUNT && i < data.low.length; i++) {
+        if (data.low[i] && rowLow[i]) {
+          rowLow[i].mass.value = data.low[i].mass || '';
+          rowLow[i].v3.value = data.low[i].v3 || '';
+          calculateRow('low', i);
+        }
+      }
+    }
+    updateCount('high', countHigh); updateCount('low', countLow); updateStat();
+  }
+
+  function clearSection(kind) {
+    const rows = kind === 'high' ? rowHigh : rowLow;
+    for (let i = 0; i < ROW_COUNT; i++) {
+      if (!rows[i]) continue;
+      rows[i].mass.value = ''; rows[i].v3.value = '';
+      rows[i].resultCell.textContent = '—'; rows[i].resultCell.classList.add('empty');
+      rows[i].resultCell.classList.remove('high', 'low');
+    }
+    updateCount(kind, kind === 'high' ? countHigh : countLow);
+    updateStat(); saveData();
+  }
+
+  function exportSection(kind) {
+    const rows = kind === 'high' ? rowHigh : rowLow;
+    const label = kind === 'high' ? '碘值大于600' : '碘值小于600';
+    const V1 = kind === 'high' ? HIGH_V1 : LOW_V1;
+    const V2 = kind === 'high' ? HIGH_V2 : LOW_V2;
+    const V  = kind === 'high' ? HIGH_V  : LOW_V;
+    let csv = [`# 煤制活性炭碘值计算导出 (GB/T 7702.7—2023) - ${label}`,
+      `# c1,${c1Input.value},mol/L`, `# c2,${c2Input.value},mol/L`,
+      `# V1,${V1},mL`, `# V2,${V2},mL`, `# V,${V},mL`, `# M,${MInput.value},g/mol`];
+    if (kind === 'high') csv.push(`# E0,${E0Input.value},mg/g`);
+    csv.push('', '序号,样品重量m(g),消耗硫代硫酸钠V3(mL),碘值E(mg/g)');
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const row = rows[i]; if (!row) continue;
+      const m = row.mass.value.trim(), v3 = row.v3.value.trim();
+      if (m === '' && v3 === '') continue;
+      const rt = row.resultCell.textContent;
+      const safe = (rt === '—' || rt === '负值' || rt === '参数无效') ? '' : rt;
+      csv.push(`${i+1},${m},${v3},${safe}`);
+    }
+    downloadCSV(csv.join('\n'), `煤制活性炭碘值_${label}`);
+  }
+
+  function bindEvents() {
+    c1Input.addEventListener('input', () => { estimateMass(); recalcAll('high'); recalcAll('low'); saveData(); });
+    c2Input.addEventListener('input', () => { recalcAll('high'); recalcAll('low'); saveData(); });
+    E0Input.addEventListener('input', () => { estimateMass(); saveData(); });
+    $('recalcHighBtn').addEventListener('click', () => recalcAll('high'));
+    $('recalcLowBtn').addEventListener('click', () => recalcAll('low'));
+    $('clearHighBtn').addEventListener('click', () => clearSection('high'));
+    $('clearLowBtn').addEventListener('click', () => clearSection('low'));
+    $('exportHighBtn').addEventListener('click', () => exportSection('high'));
+    $('exportLowBtn').addEventListener('click', () => exportSection('low'));
+  }
+
+  buildTable('high', tbodyHigh, rowHigh, countHigh);
+  buildTable('low', tbodyLow, rowLow, countLow);
+  bindEvents();
+  loadData();
+  estimateMass();
+})();
+
+/* ============================================================
+   工作表 2：木质活性炭碘值 (GB/T 12496.8)
+   ============================================================ */
+(function() {
+  const D_VALUES = [
+    1.2885,1.2873,1.2861,1.2849,1.2837,1.2825,1.2813,1.2801,1.2789,1.2777,
+    1.2675,1.2663,1.2651,1.2639,1.2627,1.2615,1.2603,1.2591,1.2579,1.2567,
+    1.2465,1.2453,1.2441,1.2429,1.2417,1.2405,1.2393,1.2381,1.2369,1.2357,
+    1.2255,1.2243,1.2231,1.2219,1.2207,1.2195,1.2183,1.2171,1.2159,1.2147,
+    1.2045,1.2033,1.2021,1.2009,1.1997,1.1985,1.1973,1.1961,1.1949,1.1937,
+    1.1835,1.1823,1.1811,1.1799,1.1787,1.1775,1.1763,1.1751,1.1739,1.1727,
+    1.1625,1.1613,1.16,1.1575,1.155,1.1533,1.1513,1.15,1.1475,1.1463,
+    1.1438,1.1425,1.14,1.1375,1.1363,1.135,1.1325,1.13,1.1288,1.1275,
+    1.125,1.1238,1.1225,1.1213,1.12,1.1175,1.1163,1.115,1.1138,1.1113,
+    1.11,1.1088,1.1075,1.1063,1.1038,1.1025,1.1,1.0988,1.0975,1.0963,
+    1.095,1.0938,1.0925,1.09,1.0888,1.0875,1.0863,1.085,1.0838,1.0825,
+    1.08,1.0788,1.0775,1.0763,1.075,1.0738,1.0725,1.0713,1.07,1.0688,
+    1.0675,1.0663,1.065,1.0625,1.0613,1.06,1.0583,1.0575,1.0563,1.055,
+    1.0538,1.0525,1.0513,1.05,1.0488,1.0475,1.0463,1.045,1.0438,1.0425,
+    1.0413,1.04,1.0388,1.0375,1.0375,1.0363,1.035,1.0333,1.0325,1.0313,
+    1.03,1.0288,1.0275,1.0263,1.025,1.0245,1.0238,1.0225,1.0208,1.02,
+    1.02,1.0188,1.0175,1.0163,1.015,1.0144,1.0138,1.0125,1.0125,1.0113,
+    1.01,1.0088,1.0075,1.0075,1.0063,1.005,1.005,1.0038,1.0025,1.0025,
+    1.0013,1,1,0.9988,0.9975,0.9975,0.9963,0.995,0.995,0.9938,
+    0.9938,0.9925,0.9925,0.9913,0.99,0.99,0.9888,0.9875,0.9875,0.9863,
+    0.9863,0.985,0.985,0.9838,0.9825,0.9825,0.9813,0.9813,0.98,0.9788,
+    0.9788,0.9775,0.9775,0.9763,0.9763,0.975,0.975,0.9738,0.9738,0.9725,
+    0.9725,0.9708,0.97,0.97,0.9688,0.9688,0.9675,0.9675,0.9663,0.9663,
+    0.965,0.965,0.9638,0.9638,0.9625,0.9625,0.9613,0.9613,0.9606,0.96,
+    0.96,0.9588,0.9588,0.9575,0.9575,0.9563,0.9563,0.955,0.955,0.9538,
+    0.9538,0.9525,0.9525,0.9519,0.9513,0.9513,0.9506,0.95,0.95,0.9488,
+    0.9488,0.9475,0.9475,0.9463,0.9463,0.9463,0.945,0.945,0.9438,0.9438,
+    0.9425,0.9425,0.9425,0.9413,0.9413,0.94,0.94,0.9394,0.9388,0.9388,
+    0.9375,0.9375,0.9375,0.9363,0.9363,0.9363,0.9363,0.9363,0.935,0.935,
+    0.9346,0.9333,0.9333,0.9325,0.9325,0.9325,0.9319,0.9313,0.9313,0.93,
+    0.93,0.93,0.9264,0.9288,0.9288,0.928,0.9275,0.9275,0.9275,0.927,
+    0.927,0.9263,0.9263,0.9257,0.925,0.925,0.9247,0.9243,0.924,0.9237,
+    0.9234,0.923,0.9227,0.9224,0.922,0.9217,0.9214,0.921,0.9207,0.9204,
+    0.9201,0.9197,0.9194,0.9191,0.9187,0.9184,0.9181,0.9177,0.9174,0.9171,
+    0.9168,0.9164,0.9161,0.9158,0.9154,0.9151,0.9148,0.9144,0.9141,0.9138,
+    0.9135,0.9131,0.9128,0.9125,0.9121,0.9118,0.9115,0.9111,0.9108,0.9105,
+    0.9102,0.9098,0.9095,0.9092,0.9088,0.9085,0.9082,0.9078,0.9075,0.9072,
+    0.9068,0.9065,0.9062,0.9058,0.9055,0.9052,0.9048,0.9045,0.9042,0.9038,
+    0.9035,0.9032,0.9028,0.9025,0.9022,0.9018,0.9015,0.9012,0.9008,0.9005,
+    0.9002,0.8998,0.8995,0.8992,0.8988,0.8985,0.8982,0.8978,0.8975,0.8972,
+    0.8968,0.8965,0.8962,0.8958,0.8955,0.8952,0.8948,0.8945,0.8942,0.8938,
+    0.8935,0.8932,0.8928,0.8925,0.8922,0.8918,0.8915,0.8912,0.8908,0.8905,
+    0.8902,0.8898,0.8895,0.8892,0.8888,0.8885,0.8882,0.8878,0.8875,0.8872,
+    0.8868,0.8865,0.8862,0.8858,0.8855,0.8852,0.8848,0.8845,0.8842,0.8838,
+    0.8835,0.8832,0.8828,0.8825,0.8822,0.8818,0.8815,0.8812,0.8808,0.8805,
+    0.8802,0.8798,0.8795,0.8792,0.8788,0.8785,0.8782,0.8778,0.8775,0.8772,
+    0.8768,0.8765,0.8762,0.8758,0.8755,0.8752,0.8748,0.8745,0.8742,0.8738,
+    0.8735,0.8732,0.8728,0.8725,0.8722,0.8718,0.8715,0.8712,0.8708,0.8705,
+    0.8697
+  ];
+  const ROW_COUNT = 35, MOLAR_MASS = 126.93, KEY = 'iodine_value_calc_v1';
+  const $ = id => document.getElementById('wood-' + id);
+  const iodineConcInput = $('iodineConc'), thioConcInput = $('thioConc');
+  const tableBody = $('tbody'), statInfo = $('statInfo');
+  const rows = [];
+
+  function lookupD(c) { const i = Math.round(c * 10000) - 20; return (i < 0 || i >= D_VALUES.length) ? null : D_VALUES[i]; }
+
+  function calcRow(i) {
+    const row = rows[i]; if (!row) return;
+    const wStr = row.weight.value.trim(), vStr = row.volume.value.trim();
+    const c1 = parseFloat(iodineConcInput.value), c2 = parseFloat(thioConcInput.value);
+    if (wStr === '' || vStr === '') {
+      row.c.value = ''; row.d.value = ''; row.res.textContent = '—'; row.res.classList.add('empty'); return;
+    }
+    const w = parseFloat(wStr), v2 = parseFloat(vStr);
+    if (isNaN(w) || w <= 0 || isNaN(v2) || v2 < 0 || isNaN(c1) || isNaN(c2)) {
+      row.c.value = ''; row.d.value = ''; row.res.textContent = '参数无效'; row.res.classList.add('empty'); return;
+    }
+    const c = c2 * v2 / 10; row.c.value = c.toFixed(4);
+    const D = lookupD(c);
+    if (D === null) { row.d.value = '超范围'; row.res.textContent = 'c超范围'; row.res.classList.add('empty'); return; }
+    row.d.value = D.toFixed(4);
+    const A = 5 * (10 * c1 - 1.2 * c2 * v2) * MOLAR_MASS / w * D;
+    if (A < 0) { row.res.textContent = '负值'; row.res.classList.add('empty'); return; }
+    // 保留整数
+    row.res.textContent = Math.round(A).toString();
+    row.res.classList.remove('empty');
+  }
+
+  function build() {
+    tableBody.innerHTML = ''; rows.length = 0;
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const tr = document.createElement('tr');
+      const td0 = document.createElement('td'); td0.className = 'row-index'; td0.textContent = i + 1; tr.appendChild(td0);
+      const mk = () => { const td = document.createElement('td'); tr.appendChild(td); return td; };
+      const tdW = mk(), tdV = mk(), tdC = mk(), tdD = mk(), tdR = mk();
+      const inW = document.createElement('input'); inW.type='number'; inW.className='cell-input'; inW.step='0.0001'; inW.min='0'; inW.placeholder='0.5000'; tdW.appendChild(inW);
+      const inV = document.createElement('input'); inV.type='number'; inV.className='cell-input'; inV.step='0.01'; inV.min='0'; inV.placeholder='例如 4.00'; tdV.appendChild(inV);
+      const inC = document.createElement('input'); inC.type='text'; inC.className='cell-input'; inC.readOnly=true; inC.placeholder='自动计算'; tdC.appendChild(inC);
+      const inD = document.createElement('input'); inD.type='text'; inD.className='cell-input'; inD.style.background='#e8f6ef'; inD.style.color='#0b6b3a'; inD.readOnly=true; inD.placeholder='自动查表'; tdD.appendChild(inD);
+      tdR.className = 'result-cell empty'; tdR.textContent = '—';
+      tableBody.appendChild(tr);
+      rows.push({ weight: inW, volume: inV, c: inC, d: inD, res: tdR });
+      inW.addEventListener('input', () => { calcRow(i); save(); });
+      inV.addEventListener('input', () => { calcRow(i); save(); });
+      const nav = makeKeyboardNavigator((r,c) => {
+        if (r < 0 || r >= ROW_COUNT) return null;
+        const rr = rows[r]; if (!rr) return null;
+        return c === 0 ? rr.weight : rr.volume;
+      }, ROW_COUNT, 2);
+      inW.addEventListener('keydown', e => nav(e, i, 0));
+      inV.addEventListener('keydown', e => nav(e, i, 1));
+    }
+    updateStat();
+  }
+
+  function updateStat() {
+    let n = 0;
+    for (let i = 0; i < ROW_COUNT; i++) if (rows[i] && rows[i].weight.value.trim() !== '' && rows[i].volume.value.trim() !== '') n++;
+    statInfo.textContent = `${n} / ${ROW_COUNT} 个样品已填写`;
+  }
+  function recalcAll() { for (let i = 0; i < ROW_COUNT; i++) calcRow(i); updateStat(); }
+  function save() {
+    LS.set(KEY, {
+      iodineConc: iodineConcInput.value, thioConc: thioConcInput.value,
+      rows: rows.map(r => ({ weight: r.weight.value, volume: r.volume.value }))
+    });
+  }
+  function load() {
+    const d = LS.get(KEY); if (!d) return;
+    if (d.iodineConc !== undefined) iodineConcInput.value = d.iodineConc;
+    if (d.thioConc !== undefined) thioConcInput.value = d.thioConc;
+    if (Array.isArray(d.rows)) {
+      for (let i = 0; i < ROW_COUNT && i < d.rows.length; i++) {
+        if (d.rows[i] && rows[i]) {
+          rows[i].weight.value = d.rows[i].weight || '';
+          rows[i].volume.value = d.rows[i].volume || '';
+          calcRow(i);
+        }
+      }
+    }
+    updateStat();
+  }
+  function clearAll() {
+    for (let i = 0; i < ROW_COUNT; i++) {
+      if (!rows[i]) continue;
+      rows[i].weight.value = ''; rows[i].volume.value = '';
+      rows[i].c.value = ''; rows[i].d.value = '';
+      rows[i].res.textContent = '—'; rows[i].res.classList.add('empty');
+    }
+    LS.del(KEY); updateStat();
+    const b = $('clearAllBtn'); const o = b.innerHTML; b.innerHTML = '✅ 已清空'; setTimeout(() => b.innerHTML = o, 900);
+  }
+  function exportCSV() {
+    let csv = ['# 木质活性炭碘值计算导出 (GB/T 12496.8)',
+      `# 碘液浓度 c1,${iodineConcInput.value},mol/L`,
+      `# 硫代硫酸钠浓度 c2,${thioConcInput.value},mol/L`, '',
+      '序号,样品重量m(g),硫代消耗V2(mL),剩余浓度c(mol/L),校正因子D,碘值A(mg/g)'];
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const r = rows[i]; if (!r) continue;
+      const w = r.weight.value.trim(), v = r.volume.value.trim();
+      if (w === '' && v === '') continue;
+      const rt = r.res.textContent;
+      const safe = (rt === '—' || rt === '负值' || rt === '参数无效' || rt === 'c超范围') ? '' : rt;
+      csv.push(`${i+1},${w},${v},${r.c.value},${r.d.value},${safe}`);
+    }
+    downloadCSV(csv.join('\n'), '木质活性炭碘值');
+  }
+  iodineConcInput.addEventListener('input', () => { recalcAll(); save(); });
+  thioConcInput.addEventListener('input', () => { recalcAll(); save(); });
+  $('recalcBtn').addEventListener('click', recalcAll);
+  $('clearAllBtn').addEventListener('click', clearAll);
+  $('exportBtn').addEventListener('click', exportCSV);
+  build(); load();
+})();
+
+/* ============================================================
+   工作表 3：炭化料工业分析
+   ============================================================ */
+(function() {
+  const ROW_COUNT = 35, KEY = 'carbonization_analysis_v4';
+  const $ = id => document.getElementById('carbon-' + id);
+  const tableBody = $('tbody'), statInfo = $('statInfo');
+  const rows = [];
+
+  function calcRow(i) {
+    const r = rows[i]; if (!r) return;
+    const [iS, dS, m1S, m2S, m3S, m4S] = [r.initial, r.dry, r.m1, r.m2, r.m3, r.m4].map(x => x.value.trim());
+    const iV = parseFloat(iS), dV = parseFloat(dS), m1 = parseFloat(m1S), m2 = parseFloat(m2S), m3 = parseFloat(m3S), m4 = parseFloat(m4S);
+    let moisture = null, volatile_ = null, ash = null;
+
+    if (iS !== '' && dS !== '' && !isNaN(iV) && iV > 0 && !isNaN(dV) && dV >= 0) {
+      if (dV <= iV) { moisture = (iV - dV) / iV * 100; r.moistureCell.textContent = moisture.toFixed(2) + ' %'; r.moistureCell.classList.remove('empty'); }
+      else { r.moistureCell.textContent = '数据异常'; r.moistureCell.classList.add('empty'); }
+    } else { r.moistureCell.textContent = '—'; r.moistureCell.classList.add('empty'); }
+
+    if (m1S !== '' && m2S !== '' && m3S !== '' && !isNaN(m1) && m1 >= 0 && !isNaN(m2) && m2 > 0 && !isNaN(m3) && m3 >= 0) {
+      const num = m2 + m1 - m3;
+      if (num >= 0) { volatile_ = num / m2 * 100; r.volatileCell.textContent = volatile_.toFixed(2) + ' %'; r.volatileCell.classList.remove('empty'); }
+      else { r.volatileCell.textContent = '数据异常'; r.volatileCell.classList.add('empty'); }
+    } else { r.volatileCell.textContent = '—'; r.volatileCell.classList.add('empty'); }
+
+    if (m1S !== '' && m2S !== '' && m4S !== '' && !isNaN(m1) && m1 >= 0 && !isNaN(m2) && m2 > 0 && !isNaN(m4) && m4 >= 0) {
+      if (m4 >= m1) { ash = (m4 - m1) / m2 * 100; r.ashCell.textContent = ash.toFixed(2) + ' %'; r.ashCell.classList.remove('empty'); }
+      else { r.ashCell.textContent = '数据异常'; r.ashCell.classList.add('empty'); }
+    } else { r.ashCell.textContent = '—'; r.ashCell.classList.add('empty'); }
+
+    if (moisture !== null && volatile_ !== null && ash !== null) {
+      const fc = 100 - moisture - volatile_ - ash;
+      if (fc >= 0) { r.fcCell.textContent = fc.toFixed(2) + ' %'; r.fcCell.classList.remove('empty'); }
+      else { r.fcCell.textContent = '数据异常'; r.fcCell.classList.add('empty'); }
+    } else { r.fcCell.textContent = '—'; r.fcCell.classList.add('empty'); }
+  }
+
+  function build() {
+    tableBody.innerHTML = ''; rows.length = 0;
+    const placeholders = ['1.0000','0.9500','18.5000','1.0000','18.7000','18.5500'];
+    const classes = ['moisture','volatile','ash','fixedcarbon'];
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const tr = document.createElement('tr');
+      const tdi = document.createElement('td'); tdi.className = 'row-index'; tdi.textContent = i + 1; tr.appendChild(tdi);
+      const inputs = [];
+      for (let j = 0; j < 6; j++) {
+        const td = document.createElement('td');
+        const inp = document.createElement('input');
+        inp.type = 'number'; inp.className = 'cell-input'; inp.step = '0.0001'; inp.min = '0';
+        inp.placeholder = placeholders[j]; inp.autocomplete = 'off';
+        td.appendChild(inp); tr.appendChild(td); inputs.push(inp);
+      }
+      const resultCells = [];
+      for (let j = 0; j < 4; j++) {
+        const td = document.createElement('td');
+        td.className = 'result-cell ' + classes[j] + ' empty'; td.textContent = '—';
+        tr.appendChild(td); resultCells.push(td);
+      }
+      tableBody.appendChild(tr);
+      const row = {
+        initial: inputs[0], dry: inputs[1], m1: inputs[2], m2: inputs[3], m3: inputs[4], m4: inputs[5],
+        moistureCell: resultCells[0], volatileCell: resultCells[1], ashCell: resultCells[2], fcCell: resultCells[3]
+      };
+      rows.push(row);
+      inputs.forEach(inp => inp.addEventListener('input', () => { calcRow(i); save(); }));
+      const nav = makeKeyboardNavigator((r,c) => {
+        if (r < 0 || r >= ROW_COUNT) return null;
+        const rr = rows[r]; if (!rr) return null;
+        return [rr.initial, rr.dry, rr.m1, rr.m2, rr.m3, rr.m4][c] || null;
+      }, ROW_COUNT, 6);
+      inputs.forEach((inp, c) => inp.addEventListener('keydown', e => nav(e, i, c)));
+    }
+    updateStat();
+  }
+  function updateStat() {
+    let n = 0;
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const r = rows[i]; if (!r) continue;
+      if ([r.initial,r.dry,r.m1,r.m2,r.m3,r.m4].some(x => x.value.trim() !== '')) n++;
+    }
+    statInfo.textContent = `${n} / ${ROW_COUNT} 个样品已填写`;
+  }
+  function recalcAll() { for (let i = 0; i < ROW_COUNT; i++) calcRow(i); updateStat(); }
+  function save() {
+    LS.set(KEY, { rows: rows.map(r => ({
+      initial: r.initial.value, dry: r.dry.value, m1: r.m1.value, m2: r.m2.value, m3: r.m3.value, m4: r.m4.value
+    })) });
+  }
+  function load() {
+    const d = LS.get(KEY); if (!d || !Array.isArray(d.rows)) return;
+    for (let i = 0; i < ROW_COUNT && i < d.rows.length; i++) {
+      const r = rows[i], s = d.rows[i];
+      if (!r || !s) continue;
+      ['initial','dry','m1','m2','m3','m4'].forEach(k => { if (s[k] !== undefined) r[k].value = s[k]; });
+      calcRow(i);
+    }
+    updateStat();
+  }
+  function clearAll() {
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const r = rows[i]; if (!r) continue;
+      [r.initial, r.dry, r.m1, r.m2, r.m3, r.m4].forEach(x => x.value = '');
+      [r.moistureCell, r.volatileCell, r.ashCell, r.fcCell].forEach(c => { c.textContent = '—'; c.classList.add('empty'); });
+    }
+    LS.del(KEY); updateStat();
+    const b = $('clearAllBtn'); const o = b.innerHTML; b.innerHTML = '✅ 已清空'; setTimeout(() => b.innerHTML = o, 900);
+  }
+  function exportCSV() {
+    let csv = ['# 炭化料工业分析导出',
+      '# 水分=(初始-烘干)/初始×100% | 挥发分=(m2+m1-m3)/m2×100% | 灰分=(m4-m1)/m2×100% | 固定碳=100%-水分-挥发分-灰分', '',
+      '序号,初始重量(g),烘干重量(g),空坩埚m1(g),克重m2(g),灼烧后m3(g),4h后m4(g),水分(%),挥发分(%),灰分(%),固定碳(%)'];
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const r = rows[i]; if (!r) continue;
+      if ([r.initial,r.dry,r.m1,r.m2,r.m3,r.m4].every(x => x.value.trim() === '')) continue;
+      const get = c => c.textContent.replace(' %', '').replace('数据异常','').replace('—','');
+      csv.push(`${i+1},${r.initial.value},${r.dry.value},${r.m1.value},${r.m2.value},${r.m3.value},${r.m4.value},${get(r.moistureCell)},${get(r.volatileCell)},${get(r.ashCell)},${get(r.fcCell)}`);
+    }
+    downloadCSV(csv.join('\n'), '炭化料工业分析');
+  }
+  $('recalcBtn').addEventListener('click', recalcAll);
+  $('clearAllBtn').addEventListener('click', clearAll);
+  $('exportBtn').addEventListener('click', exportCSV);
+  build(); load();
+})();
+
+/* ============================================================
+   工作表 4：四氯化碳吸附率
+   ============================================================ */
+(function() {
+  const ROW_COUNT = 35, KEY = 'ctc_calc_v3';
+  const $ = id => document.getElementById('ctc-' + id);
+  const tableBody = $('tbody'), statInfo = $('statInfo');
+  const rows = [];
+
+  function calcRow(i) {
+    const r = rows[i]; if (!r) return;
+    const [s1, s2, s3, s4] = [r.m1.value.trim(), r.m2.value.trim(), r.m3.value.trim(), r.m4.value.trim()];
+    if (s1 === '' && s2 === '' && s3 === '' && s4 === '') {
+      r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('low', 'pass'); return;
+    }
+    const m1 = parseFloat(s1), m2 = parseFloat(s2), m3 = parseFloat(s3), m4 = parseFloat(s4);
+    if (isNaN(m1) || m1 < 0 || isNaN(m2) || m2 <= 0 || isNaN(m3) || m3 <= 0 || isNaN(m4) || m4 < 0) {
+      r.res.textContent = '参数无效'; r.res.classList.add('empty'); r.res.classList.remove('low','pass'); return;
+    }
+    if (m2 <= m1 || m3 < m2 || m4 <= m3) {
+      r.res.textContent = '数据异常'; r.res.classList.add('empty'); r.res.classList.remove('low','pass'); return;
+    }
+    const A = (m4 - m3) / (m2 - m1) * 100;
+    r.res.textContent = A.toFixed(2) + ' %';
+    r.res.classList.remove('empty');
+    if (A < 60) { r.res.classList.add('low'); r.res.classList.remove('pass'); }
+    else { r.res.classList.add('pass'); r.res.classList.remove('low'); }
+  }
+
+  function build() {
+    tableBody.innerHTML = ''; rows.length = 0;
+    const placeholders = ['25.000','45.000','45.200','68.000'];
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const tr = document.createElement('tr');
+      const tdi = document.createElement('td'); tdi.className='row-index'; tdi.textContent = i+1; tr.appendChild(tdi);
+      const inputs = [];
+      for (let j = 0; j < 4; j++) {
+        const td = document.createElement('td');
+        const inp = document.createElement('input');
+        inp.type='number'; inp.className='cell-input'; inp.step='0.001'; inp.min='0';
+        inp.placeholder = placeholders[j]; inp.autocomplete = 'off';
+        td.appendChild(inp); tr.appendChild(td); inputs.push(inp);
+      }
+      const tdR = document.createElement('td');
+      tdR.className = 'result-cell empty'; tdR.textContent = '—';
+      tr.appendChild(tdR);
+      tableBody.appendChild(tr);
+      const row = { m1: inputs[0], m2: inputs[1], m3: inputs[2], m4: inputs[3], res: tdR };
+      rows.push(row);
+      inputs.forEach(inp => inp.addEventListener('input', () => { calcRow(i); save(); }));
+      const nav = makeKeyboardNavigator((r,c) => {
+        if (r < 0 || r >= ROW_COUNT) return null;
+        const rr = rows[r]; if (!rr) return null;
+        return [rr.m1, rr.m2, rr.m3, rr.m4][c] || null;
+      }, ROW_COUNT, 4);
+      inputs.forEach((inp, c) => inp.addEventListener('keydown', e => nav(e, i, c)));
+    }
+    updateStat();
+  }
+  function updateStat() {
+    let n = 0;
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const r = rows[i]; if (!r) continue;
+      if ([r.m1, r.m2, r.m3, r.m4].every(x => x.value.trim() !== '')) n++;
+    }
+    statInfo.textContent = `${n} / ${ROW_COUNT} 个样品已填写`;
+  }
+  function recalcAll() { for (let i = 0; i < ROW_COUNT; i++) calcRow(i); updateStat(); }
+  function save() { LS.set(KEY, { rows: rows.map(r => ({ m1: r.m1.value, m2: r.m2.value, m3: r.m3.value, m4: r.m4.value })) }); }
+  function load() {
+    const d = LS.get(KEY); if (!d || !Array.isArray(d.rows)) return;
+    for (let i = 0; i < ROW_COUNT && i < d.rows.length; i++) {
+      const r = rows[i], s = d.rows[i];
+      if (!r || !s) continue;
+      ['m1','m2','m3','m4'].forEach(k => { if (s[k] !== undefined) r[k].value = s[k]; });
+      calcRow(i);
+    }
+    updateStat();
+  }
+  function clearAll() {
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const r = rows[i]; if (!r) continue;
+      [r.m1, r.m2, r.m3, r.m4].forEach(x => x.value = '');
+      r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('low','pass');
+    }
+    LS.del(KEY); updateStat();
+    const b = $('clearAllBtn'); const o = b.innerHTML; b.innerHTML = '✅ 已清空'; setTimeout(() => b.innerHTML = o, 900);
+  }
+  function exportCSV() {
+    let csv = ['# 活性炭四氯化碳吸附率导出 (GB/T 12496.5-1999)',
+      '# A(%) = (m4 - m3) / (m2 - m1) × 100%', '',
+      '序号,空管质量m1(g),加炭后重量m2(g),涂抹凡士林后质量m3(g),吸附后质量m4(g),吸附率A(%)'];
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const r = rows[i]; if (!r) continue;
+      if ([r.m1,r.m2,r.m3,r.m4].every(x => x.value.trim() === '')) continue;
+      const rt = r.res.textContent;
+      const safe = (rt === '—' || rt === '数据异常' || rt === '参数无效') ? '' : rt.replace(' %','');
+      csv.push(`${i+1},${r.m1.value},${r.m2.value},${r.m3.value},${r.m4.value},${safe}`);
+    }
+    downloadCSV(csv.join('\n'), '四氯化碳吸附率');
+  }
+  $('recalcBtn').addEventListener('click', recalcAll);
+  $('clearAllBtn').addEventListener('click', clearAll);
+  $('exportBtn').addEventListener('click', exportCSV);
+  build(); load();
+})();
+
+/* ============================================================
+   工作表 5：活性炭强度
+   ============================================================ */
+(function() {
+  const ROW_COUNT = 35, KEY = 'strength_calc_v1';
+  const $ = id => document.getElementById('strength-' + id);
+  const tableBody = $('tbody'), statInfo = $('statInfo');
+  const rows = [];
+
+  function calcRow(i) {
+    const r = rows[i]; if (!r) return;
+    const s1 = r.m1.value.trim(), s2 = r.m2.value.trim();
+    if (s1 === '' || s2 === '') { r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('low'); return; }
+    const m1 = parseFloat(s1), m2 = parseFloat(s2);
+    if (isNaN(m1) || m1 <= 0 || isNaN(m2) || m2 < 0) { r.res.textContent = '参数无效'; r.res.classList.add('empty'); r.res.classList.remove('low'); return; }
+    if (m2 > m1) { r.res.textContent = '数据异常'; r.res.classList.add('empty'); r.res.classList.remove('low'); return; }
+    const s = m2 / m1 * 100;
+    r.res.textContent = s.toFixed(2) + ' %'; r.res.classList.remove('empty');
+    if (s < 95) r.res.classList.add('low'); else r.res.classList.remove('low');
+  }
+
+  function build() {
+    tableBody.innerHTML = ''; rows.length = 0;
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const tr = document.createElement('tr');
+      const tdi = document.createElement('td'); tdi.className='row-index'; tdi.textContent = i+1; tr.appendChild(tdi);
+      const td1 = document.createElement('td'), td2 = document.createElement('td');
+      const in1 = document.createElement('input'); in1.type='number'; in1.className='cell-input'; in1.step='0.01'; in1.min='0'; in1.placeholder='例如 25.00'; td1.appendChild(in1);
+      const in2 = document.createElement('input'); in2.type='number'; in2.className='cell-input'; in2.step='0.01'; in2.min='0'; in2.placeholder='例如 24.50'; td2.appendChild(in2);
+      tr.appendChild(td1); tr.appendChild(td2);
+      const tdR = document.createElement('td'); tdR.className='result-cell strength empty'; tdR.textContent = '—'; tr.appendChild(tdR);
+      tableBody.appendChild(tr);
+      const row = { m1: in1, m2: in2, res: tdR };
+      rows.push(row);
+      in1.addEventListener('input', () => { calcRow(i); save(); });
+      in2.addEventListener('input', () => { calcRow(i); save(); });
+      const nav = makeKeyboardNavigator((r,c) => {
+        if (r < 0 || r >= ROW_COUNT) return null;
+        const rr = rows[r]; if (!rr) return null;
+        return c === 0 ? rr.m1 : rr.m2;
+      }, ROW_COUNT, 2);
+      in1.addEventListener('keydown', e => nav(e, i, 0));
+      in2.addEventListener('keydown', e => nav(e, i, 1));
+    }
+    updateStat();
+  }
+  function updateStat() {
+    let n = 0;
+    for (let i = 0; i < ROW_COUNT; i++) if (rows[i] && rows[i].m1.value.trim() !== '' && rows[i].m2.value.trim() !== '') n++;
+    statInfo.textContent = `${n} / ${ROW_COUNT} 个样品已填写`;
+  }
+  function recalcAll() { for (let i = 0; i < ROW_COUNT; i++) calcRow(i); updateStat(); }
+  function save() { LS.set(KEY, { rows: rows.map(r => ({ m1: r.m1.value, m2: r.m2.value })) }); }
+  function load() {
+    const d = LS.get(KEY); if (!d || !Array.isArray(d.rows)) return;
+    for (let i = 0; i < ROW_COUNT && i < d.rows.length; i++) {
+      const r = rows[i], s = d.rows[i];
+      if (!r || !s) continue;
+      if (s.m1 !== undefined) r.m1.value = s.m1;
+      if (s.m2 !== undefined) r.m2.value = s.m2;
+      calcRow(i);
+    }
+    updateStat();
+  }
+  function clearAll() {
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const r = rows[i]; if (!r) continue;
+      r.m1.value = ''; r.m2.value = '';
+      r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('low');
+    }
+    LS.del(KEY); updateStat();
+    const b = $('clearAllBtn'); const o = b.innerHTML; b.innerHTML = '✅ 已清空'; setTimeout(() => b.innerHTML = o, 900);
+  }
+  function exportCSV() {
+    let csv = ['# 活性炭强度导出 (GB/T 12496.6-1999)', '# W(%) = m2 / m1 × 100%', '',
+      '序号,50mL试样重量m1(g),过筛后重量m2(g),强度W(%)'];
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const r = rows[i]; if (!r) continue;
+      if (r.m1.value.trim() === '' && r.m2.value.trim() === '') continue;
+      const rt = r.res.textContent;
+      const safe = (rt === '—' || rt === '数据异常' || rt === '参数无效') ? '' : rt.replace(' %','');
+      csv.push(`${i+1},${r.m1.value},${r.m2.value},${safe}`);
+    }
+    downloadCSV(csv.join('\n'), '活性炭强度');
+  }
+  $('recalcBtn').addEventListener('click', recalcAll);
+  $('clearAllBtn').addEventListener('click', clearAll);
+  $('exportBtn').addEventListener('click', exportCSV);
+  build(); load();
+})();
+
+/* ============================================================
+   工作表 6：活性炭灰分
+   ============================================================ */
+(function() {
+  const ROW_COUNT = 35, KEY = 'ash_calc_v2';
+  const $ = id => document.getElementById('ash-' + id);
+  const tableBody = $('tbody'), statInfo = $('statInfo');
+  const rows = [];
+
+  function calcRow(i) {
+    const r = rows[i]; if (!r) return;
+    const cS = r.crucible.value.trim(), sS = r.sample.value.trim(), aS = r.ashed.value.trim();
+    if (cS === '' && sS === '' && aS === '') { r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('high'); return; }
+    const c = parseFloat(cS), s = parseFloat(sS), a = parseFloat(aS);
+    if (isNaN(c) || c < 0 || isNaN(s) || s <= 0 || isNaN(a) || a < 0) { r.res.textContent = '参数无效'; r.res.classList.add('empty'); r.res.classList.remove('high'); return; }
+    const am = a - c;
+    if (am < 0) { r.res.textContent = '数据异常'; r.res.classList.add('empty'); r.res.classList.remove('high'); return; }
+    const ash = am / s * 100;
+    r.res.textContent = ash.toFixed(2) + ' %'; r.res.classList.remove('empty');
+    if (ash > 10) r.res.classList.add('high'); else r.res.classList.remove('high');
+  }
+  function build() {
+    tableBody.innerHTML = ''; rows.length = 0;
+    const ph = ['18.5000','1.0000','18.5500'];
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const tr = document.createElement('tr');
+      const tdi = document.createElement('td'); tdi.className='row-index'; tdi.textContent = i+1; tr.appendChild(tdi);
+      const inputs = [];
+      for (let j = 0; j < 3; j++) {
+        const td = document.createElement('td');
+        const inp = document.createElement('input');
+        inp.type='number'; inp.className='cell-input'; inp.step='0.0001'; inp.min='0';
+        inp.placeholder = ph[j]; inp.autocomplete = 'off';
+        td.appendChild(inp); tr.appendChild(td); inputs.push(inp);
+      }
+      const tdR = document.createElement('td');
+      tdR.className = 'result-cell ash empty'; tdR.textContent = '—';
+      tr.appendChild(tdR);
+      tableBody.appendChild(tr);
+      const row = { crucible: inputs[0], sample: inputs[1], ashed: inputs[2], res: tdR };
+      rows.push(row);
+      inputs.forEach(inp => inp.addEventListener('input', () => { calcRow(i); save(); }));
+      const nav = makeKeyboardNavigator((r,c) => {
+        if (r < 0 || r >= ROW_COUNT) return null;
+        const rr = rows[r]; if (!rr) return null;
+        return [rr.crucible, rr.sample, rr.ashed][c] || null;
+      }, ROW_COUNT, 3);
+      inputs.forEach((inp, c) => inp.addEventListener('keydown', e => nav(e, i, c)));
+    }
+    updateStat();
+  }
+  function updateStat() {
+    let n = 0;
+    for (let i = 0; i < ROW_COUNT; i++) if (rows[i] && rows[i].crucible.value.trim() !== '' && rows[i].sample.value.trim() !== '') n++;
+    statInfo.textContent = `${n} / ${ROW_COUNT} 个样品已填写`;
+  }
+  function recalcAll() { for (let i = 0; i < ROW_COUNT; i++) calcRow(i); updateStat(); }
+  function save() { LS.set(KEY, { rows: rows.map(r => ({ crucible: r.crucible.value, sample: r.sample.value, ashed: r.ashed.value })) }); }
+  function load() {
+    const d = LS.get(KEY); if (!d || !Array.isArray(d.rows)) return;
+    for (let i = 0; i < ROW_COUNT && i < d.rows.length; i++) {
+      const r = rows[i], s = d.rows[i];
+      if (!r || !s) continue;
+      ['crucible','sample','ashed'].forEach(k => { if (s[k] !== undefined) r[k].value = s[k]; });
+      calcRow(i);
+    }
+    updateStat();
+  }
+  function clearAll() {
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const r = rows[i]; if (!r) continue;
+      r.crucible.value = ''; r.sample.value = ''; r.ashed.value = '';
+      r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('high');
+    }
+    LS.del(KEY); updateStat();
+    const b = $('clearAllBtn'); const o = b.innerHTML; b.innerHTML = '✅ 已清空'; setTimeout(() => b.innerHTML = o, 900);
+  }
+  function exportCSV() {
+    let csv = ['# 活性炭灰分导出 (GB/T 12496.3-1999)', '# 灰分 = (m3 - m1) / m × 100%', '',
+      '序号,空坩埚m1(g),样品重量m(g),灼烧后m3(g),灰分含量(%)'];
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const r = rows[i]; if (!r) continue;
+      if (r.crucible.value.trim() === '' && r.sample.value.trim() === '' && r.ashed.value.trim() === '') continue;
+      const rt = r.res.textContent;
+      const safe = (rt === '—' || rt === '数据异常' || rt === '参数无效') ? '' : rt.replace(' %','');
+      csv.push(`${i+1},${r.crucible.value},${r.sample.value},${r.ashed.value},${safe}`);
+    }
+    downloadCSV(csv.join('\n'), '活性炭灰分');
+  }
+  $('recalcBtn').addEventListener('click', recalcAll);
+  $('clearAllBtn').addEventListener('click', clearAll);
+  $('exportBtn').addEventListener('click', exportCSV);
+  build(); load();
+})();
+
+/* ============================================================
+   工作表 7：水分与表观密度
+   ============================================================ */
+(function() {
+  const ROW_COUNT = 35, KEY = 'moisture_bulk_calc_v1';
+  const $ = id => document.getElementById('moisture-' + id);
+  const tableBody = $('tbody'), statInfo = $('statInfo');
+  const rows = [];
+
+  function calcRow(i) {
+    const r = rows[i]; if (!r) return;
+    const iS = r.initial.value.trim(), dS = r.dry.value.trim(), wS = r.w100.value.trim();
+    let moisture = null;
+    if (iS !== '' && dS !== '') {
+      const iv = parseFloat(iS), dv = parseFloat(dS);
+      if (!isNaN(iv) && iv > 0 && !isNaN(dv) && dv >= 0) {
+        if (dv <= iv) {
+          moisture = (iv - dv) / iv * 100;
+          r.moistureCell.textContent = moisture.toFixed(2) + ' %'; r.moistureCell.classList.remove('empty');
+          if (moisture > 15) r.moistureCell.classList.add('high'); else r.moistureCell.classList.remove('high');
+        } else { r.moistureCell.textContent = '数据异常'; r.moistureCell.classList.add('empty'); r.moistureCell.classList.remove('high'); }
+      } else { r.moistureCell.textContent = '参数无效'; r.moistureCell.classList.add('empty'); r.moistureCell.classList.remove('high'); }
+    } else { r.moistureCell.textContent = '—'; r.moistureCell.classList.add('empty'); r.moistureCell.classList.remove('high'); }
+
+    if (moisture !== null && wS !== '') {
+      const w = parseFloat(wS);
+      if (!isNaN(w) && w > 0) {
+        const bulk = w * (1 - moisture / 100) / 100;
+        r.bulkCell.textContent = bulk.toFixed(3) + ' g/mL'; r.bulkCell.classList.remove('empty');
+      } else { r.bulkCell.textContent = '参数无效'; r.bulkCell.classList.add('empty'); }
+    } else { r.bulkCell.textContent = '—'; r.bulkCell.classList.add('empty'); }
+  }
+  function build() {
+    tableBody.innerHTML = ''; rows.length = 0;
+    const ph = ['1.0000','0.9500','50.00'];
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const tr = document.createElement('tr');
+      const tdi = document.createElement('td'); tdi.className='row-index'; tdi.textContent = i+1; tr.appendChild(tdi);
+      const inputs = [];
+      for (let j = 0; j < 3; j++) {
+        const td = document.createElement('td');
+        const inp = document.createElement('input');
+        inp.type='number'; inp.className='cell-input'; inp.step = j===2 ? '0.01' : '0.0001'; inp.min='0';
+        inp.placeholder = ph[j]; inp.autocomplete = 'off';
+        td.appendChild(inp); tr.appendChild(td); inputs.push(inp);
+        if (j === 1) {
+          const tdM = document.createElement('td'); tdM.className = 'result-cell empty'; tdM.textContent = '—'; tr.appendChild(tdM);
+        }
+      }
+      const tdR = document.createElement('td'); tdR.className = 'result-cell bulk empty'; tdR.textContent = '—'; tr.appendChild(tdR);
+      tableBody.appendChild(tr);
+      const row = { initial: inputs[0], dry: inputs[1], w100: inputs[2], moistureCell: tr.children[3], bulkCell: tdR };
+      rows.push(row);
+      inputs.forEach(inp => inp.addEventListener('input', () => { calcRow(i); save(); }));
+      const nav = makeKeyboardNavigator((r,c) => {
+        if (r < 0 || r >= ROW_COUNT) return null;
+        const rr = rows[r]; if (!rr) return null;
+        return [rr.initial, rr.dry, rr.w100][c] || null;
+      }, ROW_COUNT, 3);
+      inputs.forEach((inp, c) => inp.addEventListener('keydown', e => nav(e, i, c)));
+    }
+    updateStat();
+  }
+  function updateStat() {
+    let n = 0;
+    for (let i = 0; i < ROW_COUNT; i++) if (rows[i] && rows[i].initial.value.trim() !== '' && rows[i].dry.value.trim() !== '') n++;
+    statInfo.textContent = `${n} / ${ROW_COUNT} 个样品已填写`;
+  }
+  function recalcAll() { for (let i = 0; i < ROW_COUNT; i++) calcRow(i); updateStat(); }
+  function save() { LS.set(KEY, { rows: rows.map(r => ({ initial: r.initial.value, dry: r.dry.value, w100: r.w100.value })) }); }
+  function load() {
+    const d = LS.get(KEY); if (!d || !Array.isArray(d.rows)) return;
+    for (let i = 0; i < ROW_COUNT && i < d.rows.length; i++) {
+      const r = rows[i], s = d.rows[i];
+      if (!r || !s) continue;
+      if (s.initial !== undefined) r.initial.value = s.initial;
+      if (s.dry !== undefined) r.dry.value = s.dry;
+      if (s.w100 !== undefined) r.w100.value = s.w100;
+      calcRow(i);
+    }
+    updateStat();
+  }
+  function clearAll() {
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const r = rows[i]; if (!r) continue;
+      r.initial.value = ''; r.dry.value = ''; r.w100.value = '';
+      r.moistureCell.textContent = '—'; r.moistureCell.classList.add('empty'); r.moistureCell.classList.remove('high');
+      r.bulkCell.textContent = '—'; r.bulkCell.classList.add('empty');
+    }
+    LS.del(KEY); updateStat();
+    const b = $('clearAllBtn'); const o = b.innerHTML; b.innerHTML = '✅ 已清空'; setTimeout(() => b.innerHTML = o, 900);
+  }
+  function exportCSV() {
+    let csv = ['# 水分与表观密度导出',
+      '# 水分：GB/T 12496.4-1999 | 表观密度：GB/T 12496.1-1999',
+      '# 水分 = (m0 - m1) / m0 × 100% | 表观密度 = 100ml重量 × (1 - 水分%) / 100', '',
+      '序号,初始重量m0(g),烘干重量m1(g),水分含量(%),100ml重量(g),表观密度(g/mL)'];
+    for (let i = 0; i < ROW_COUNT; i++) {
+      const r = rows[i]; if (!r) continue;
+      if (r.initial.value.trim() === '' && r.dry.value.trim() === '' && r.w100.value.trim() === '') continue;
+      const getM = c => { const t = c.textContent; return (t === '—' || t === '数据异常' || t === '参数无效') ? '' : t.replace(' %',''); };
+      const getB = c => { const t = c.textContent; return (t === '—' || t === '参数无效') ? '' : t.replace(' g/mL',''); };
+      csv.push(`${i+1},${r.initial.value},${r.dry.value},${getM(r.moistureCell)},${r.w100.value},${getB(r.bulkCell)}`);
+    }
+    downloadCSV(csv.join('\n'), '水分与表观密度');
+  }
+  $('recalcBtn').addEventListener('click', recalcAll);
+  $('clearAllBtn').addEventListener('click', clearAll);
+  $('exportBtn').addEventListener('click', exportCSV);
+  build(); load();
+})();
+
+/* ============================================================
+   输入框已填高亮：用户输入自动加 .filled 类
+   ============================================================ */
+(function() {
+  function syncFilled(el) {
+    if (!el || !el.classList) return;
+    // 只读输入框（剩余浓度c、校正因子D等）保持原样式
+    if (el.readOnly) {
+      el.classList.remove('filled');
+      return;
+    }
+    if (el.value && el.value.trim() !== '') el.classList.add('filled');
+    else el.classList.remove('filled');
+  }
+
+  function syncAllFilled() {
+    document.querySelectorAll('input.cell-input').forEach(syncFilled);
+  }
+
+  // 用户输入时立即同步
+  document.addEventListener('input', function(e) {
+    if (e.target && e.target.classList && e.target.classList.contains('cell-input')) {
+      syncFilled(e.target);
+    }
+  }, true);
+
+  // 任意按钮点击后延迟同步一次（覆盖清空、重新计算、加载数据后的状态）
+  document.addEventListener('click', function() {
+    setTimeout(syncAllFilled, 20);
+  }, true);
+
+  // 页面加载完成后统一同步（覆盖 localStorage 恢复的数据）
+  window.addEventListener('load', syncAllFilled);
+  setTimeout(syncAllFilled, 300);
+  setTimeout(syncAllFilled, 800);
+})();
+</script>
+</body>
+</html>
