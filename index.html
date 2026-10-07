@@ -314,7 +314,7 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 700; color: #0d4e
     </p>
   </div>
   <div class="tab-bar" id="tabBar">
-    <button class="tab active" data-sheet="coal"><span class="icon">⚫</span>煤制活性炭碘值</button>
+    <button class="tab active" data-sheet="coal"><span class="icon">⚫</span>煤质活性炭碘值</button>
     <button class="tab" data-sheet="wood"><span class="icon">🌾</span>木质活性炭碘值</button>
     <button class="tab" data-sheet="carbon"><span class="icon">🔥</span>炭化料工业分析</button>
     <button class="tab" data-sheet="ctc"><span class="icon">💨</span>四氯化碳吸附率</button>
@@ -388,7 +388,7 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 700; color: #0d4e
     </div>
 
     <div class="sheet" id="sheet-wood">
-      <div class="subhead">依据 GB/T 12496.8-2015 标准，自动根据剩余浓度 c 查表填写校正因子 D，结果保留整数。</div>
+      <div class="subhead">依据 GB/T 12496.8-2015 《木质活性炭试验方法 碘吸附值的测定》，自动根据剩余浓度 c 查表填写校正因子 D，结果保留整数。</div>
       <div class="formula-badge">📐 碘吸附值 A = (X/M) · D | X/M = <code>5(10c₁ - 1.2c₂V₂) × 126.93 / m</code> | c = <code>c₂V₂ / 10</code></div>
       <div class="params-grid">
         <div class="param-item"><label class="label-red">碘液浓度 c₁ (1/2 I₂) <span class="unit">mol/L</span></label><input type="number" id="wood-iodineConc" step="0.0001" min="0" placeholder="例如 0.1000" autocomplete="off"></div>
@@ -814,7 +814,7 @@ function downloadCSV(content, filename) {
 const allSavers = [];
 
 /* ============================================================
-   工作表 1：煤制活性炭碘值
+   工作表 1：煤质活性炭碘值
    ============================================================ */
 (function() {
   const ROW_COUNT = 35;
@@ -991,7 +991,7 @@ const allSavers = [];
       const tt = (row.timeCell.textContent === '—') ? '' : row.timeCell.textContent;
       csv.push(`${i+1},${m},${v3},${safe},${tt}`);
     }
-    downloadCSV(csv.join('\n'), `煤制活性炭碘值_${label}`);
+    downloadCSV(csv.join('\n'), `煤质活性炭碘值_${label}`);
   }
   function bindEvents() {
     c1Input.addEventListener('input', () => { estimateMass(); recalcAll('high'); recalcAll('low'); saveData(); });
@@ -1193,7 +1193,7 @@ const allSavers = [];
 })();
 
 /* ============================================================
-   工作表 3：炭化料工业分析
+   工作表 3：炭化料分析
    ============================================================ */
 (function() {
   const ROW_COUNT = 35, KEY = 'carbonization_analysis_v4';
@@ -1310,7 +1310,7 @@ const allSavers = [];
     const b = $('clearAllBtn'); const o = b.innerHTML; b.innerHTML = '✅ 已清空'; setTimeout(() => b.innerHTML = o, 900);
   }
   function exportCSV() {
-    let csv = ['# 炭化料工业分析导出',
+    let csv = ['# 炭化料分析导出',
       '# 水分=(初始-烘干)/初始×100% | 挥发分=(m2+m1-m3)/m2×100% | 灰分=(m4-m1)/m2×100% | 固定碳=100%-水分-挥发分-灰分', '',
       '序号,初始重量(g),烘干重量(g),空坩埚m1(g),克重m2(g),灼烧后m3(g),4h后m4(g),水分(%),挥发分(%),灰分(%),固定碳(%),记录时间'];
     for (let i = 0; i < ROW_COUNT; i++) {
@@ -1320,7 +1320,7 @@ const allSavers = [];
       const tt = (r.timeCell.textContent === '—') ? '' : r.timeCell.textContent;
       csv.push(`${i+1},${r.initial.value},${r.dry.value},${r.m1.value},${r.m2.value},${r.m3.value},${r.m4.value},${get(r.moistureCell)},${get(r.volatileCell)},${get(r.ashCell)},${get(r.fcCell)},${tt}`);
     }
-    downloadCSV(csv.join('\n'), '炭化料工业分析');
+    downloadCSV(csv.join('\n'), '炭化料分析');
   }
   $('recalcBtn').addEventListener('click', recalcAll);
   $('clearAllBtn').addEventListener('click', clearAll);
