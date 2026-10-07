@@ -22,6 +22,34 @@ input.cell-input.filled:focus {
   border-color: #1e7e9c;
 }
 
+/* ============ 最近计算出结果的行高亮 ============ */
+tbody tr.recent-row {
+  background: #fff8e1 !important;
+  box-shadow: inset 4px 0 0 #f0c674;
+}
+tbody tr.recent-row:hover {
+  background: #fff3cc !important;
+}
+tbody tr.recent-row input.cell-input.filled {
+  background: #fff3cc;
+  border-color: #e6bd5a;
+}
+
+/* ============ 时间戳样式 ============ */
+.timestamp-cell {
+  font-size: 0.74rem;
+  color: #5b6f82;
+  text-align: right;
+  padding-right: 12px;
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  letter-spacing: -0.3px;
+}
+.timestamp-cell.empty {
+  color: #c5ced6;
+  font-weight: 400;
+}
+
 /* ============ 登录遮罩层 ============ */
 #loginOverlay {
   position: fixed; inset: 0; z-index: 9999;
@@ -42,24 +70,16 @@ input.cell-input.filled:focus {
   from { opacity: 0; transform: translateY(-12px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.login-icon {
-  font-size: 3rem; line-height: 1; margin-bottom: 14px;
-}
-.login-card h2 {
-  font-size: 1.4rem; font-weight: 700; color: #0b2a3b; margin-bottom: 8px;
-}
-.login-card p {
-  font-size: 0.85rem; color: #5b6f82; margin-bottom: 26px;
-}
+.login-icon { font-size: 3rem; line-height: 1; margin-bottom: 14px; }
+.login-card h2 { font-size: 1.4rem; font-weight: 700; color: #0b2a3b; margin-bottom: 8px; }
+.login-card p { font-size: 0.85rem; color: #5b6f82; margin-bottom: 26px; }
 .login-card input {
   width: 100%; padding: 14px 18px; border: 1.5px solid #cbdae6;
   border-radius: 12px; font-size: 1rem; font-family: inherit;
   text-align: center; letter-spacing: 3px;
   transition: 0.15s; color: #0a2a3b; margin-bottom: 14px;
 }
-.login-card input:focus {
-  border-color: #1e7e9c; box-shadow: 0 0 0 3px rgba(30,126,156,0.15); outline: none;
-}
+.login-card input:focus { border-color: #1e7e9c; box-shadow: 0 0 0 3px rgba(30,126,156,0.15); outline: none; }
 .login-card button {
   width: 100%; padding: 14px; border: none; border-radius: 12px;
   background: #1e7e9c; color: white; font-size: 1rem; font-weight: 700;
@@ -68,17 +88,12 @@ input.cell-input.filled:focus {
 }
 .login-card button:hover { background: #156d88; transform: translateY(-1px); }
 .login-card button:active { transform: translateY(1px); }
-.login-error {
-  color: #c62828; font-size: 0.82rem; min-height: 20px;
-  margin-top: 10px; font-weight: 600;
-}
-.login-hint {
-  margin-top: 20px; font-size: 0.72rem; color: #9aabb9;
-}
+.login-error { color: #c62828; font-size: 0.82rem; min-height: 20px; margin-top: 10px; font-weight: 600; }
+.login-hint { margin-top: 20px; font-size: 0.72rem; color: #9aabb9; }
 
 /* ============ 工作簿 ============ */
 .workbook {
-  max-width: 1500px; width: 100%; background: #ffffff;
+  max-width: 1600px; width: 100%; background: #ffffff;
   border-radius: 20px; box-shadow: 0 12px 40px rgba(0, 20, 30, 0.10);
   overflow: hidden;
 }
@@ -118,10 +133,7 @@ input.cell-input.filled:focus {
   display: inline-flex; align-items: center; gap: 6px;
 }
 .tab:hover { background: #f0f6fc; color: #0b2a3b; }
-.tab.active {
-  background: #ffffff; color: #0b2a3b;
-  border-bottom-color: #1e7e9c;
-}
+.tab.active { background: #ffffff; color: #0b2a3b; border-bottom-color: #1e7e9c; }
 .tab .icon { font-size: 1rem; }
 .sheet-body { padding: 24px 28px 32px; }
 .sheet { display: none; }
@@ -166,9 +178,7 @@ input.cell-input.filled:focus {
   margin-bottom: 24px; border: 1px solid #d9e4ef; align-items: flex-end;
 }
 .param-item { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
-.param-item label {
-  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.3px; color: #3d5a73;
-}
+.param-item label { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.3px; color: #3d5a73; }
 .param-item label.label-red { color: #d32f2f; font-weight: 800; font-size: 0.85rem; }
 .param-item label.label-red .unit { color: #d32f2f; font-weight: 700; }
 .param-item .unit { font-size: 0.7rem; color: #7a8e9e; font-weight: 400; margin-left: 4px; }
@@ -243,10 +253,7 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
 .section-high .section-title { color: #c62828; }
 .section-low .section-title { color: #0b6b3a; }
 .section-desc { font-size: 0.8rem; color: #5b6f82; flex: 1; min-width: 200px; }
-.badge-count {
-  background: #ffffff; padding: 4px 14px; border-radius: 30px;
-  font-size: 0.76rem; font-weight: 600;
-}
+.badge-count { background: #ffffff; padding: 4px 14px; border-radius: 30px; font-size: 0.76rem; font-weight: 600; }
 .section-high .badge-count { color: #c62828; border: 1px solid #f5c6c6; }
 .section-low .badge-count { color: #0b6b3a; border: 1px solid #b8e0c8; }
 .estimator-box { background: #ffffff; border: 1px solid #f5c6c6; border-radius: 14px; padding: 16px 20px; margin-bottom: 18px; }
@@ -258,11 +265,7 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
   display: inline-block; min-width: 260px;
 }
 .estimator-result span { font-weight: 400; color: #3d5a73; font-size: 0.85rem; }
-.tag-auto {
-  display: inline-block; background: #a8d9bd; color: #0b6b3a;
-  font-size: 0.68rem; padding: 1px 8px; border-radius: 20px;
-  margin-left: 6px; vertical-align: middle;
-}
+.tag-auto { display: inline-block; background: #a8d9bd; color: #0b6b3a; font-size: 0.68rem; padding: 1px 8px; border-radius: 20px; margin-left: 6px; vertical-align: middle; }
 @media (max-width: 800px) {
   .tab { padding: 12px 14px; font-size: 0.8rem; }
   .sheet-body { padding: 16px 12px 24px; }
@@ -294,7 +297,7 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
   <div class="workbook-header">
     <h1>🧪 活性炭实验室计算工作簿 <small>共 7 个功能表</small></h1>
     <p>
-      <span>点击标签切换功能，所有数据自动保存到本地浏览器。已填输入框显示浅黄底色。</span>
+      <span>点击标签切换功能，所有数据自动保存。已填输入框浅黄底，最近计算出结果的行高亮显示。</span>
       <button class="logout-btn" id="logoutBtn">🔒 锁定</button>
     </p>
   </div>
@@ -360,9 +363,10 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
             <thead>
               <tr>
                 <th style="width:45px;">#</th>
-                <th style="width:160px;">样品重量 m (g)</th>
-                <th style="width:180px;">消耗硫代硫酸钠 V₃ (mL)</th>
-                <th style="width:160px;">碘值 E (mg/g)</th>
+                <th style="width:150px;">样品重量 m (g)</th>
+                <th style="width:170px;">消耗硫代硫酸钠 V₃ (mL)</th>
+                <th style="width:130px;">碘值 E (mg/g)</th>
+                <th style="width:160px;">记录时间</th>
               </tr>
             </thead>
             <tbody id="coal-tbodyHigh"></tbody>
@@ -386,9 +390,10 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
             <thead>
               <tr>
                 <th style="width:45px;">#</th>
-                <th style="width:160px;">样品重量 m (g)</th>
-                <th style="width:180px;">消耗硫代硫酸钠 V₃ (mL)</th>
-                <th style="width:160px;">碘值 E (mg/g)</th>
+                <th style="width:150px;">样品重量 m (g)</th>
+                <th style="width:170px;">消耗硫代硫酸钠 V₃ (mL)</th>
+                <th style="width:130px;">碘值 E (mg/g)</th>
+                <th style="width:160px;">记录时间</th>
               </tr>
             </thead>
             <tbody id="coal-tbodyLow"></tbody>
@@ -429,15 +434,16 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
         <span><kbd>Shift</kbd>+<kbd>Enter</kbd> 上一个</span>
       </div>
       <div class="table-wrap">
-        <table style="min-width:850px;">
+        <table style="min-width:1080px;">
           <thead>
             <tr>
               <th style="width:50px;">#</th>
               <th style="width:130px;">样品重量 m (g)</th>
-              <th style="width:140px;">硫代消耗 V₂ (mL)</th>
-              <th style="width:140px;">剩余浓度 c (mol/L)</th>
-              <th style="width:140px;">校正因子 D <span class="tag-auto">自动</span></th>
-              <th style="width:140px;">碘值 A (mg/g)</th>
+              <th style="width:130px;">硫代消耗 V₂ (mL)</th>
+              <th style="width:130px;">剩余浓度 c (mol/L)</th>
+              <th style="width:130px;">校正因子 D <span class="tag-auto">自动</span></th>
+              <th style="width:130px;">碘值 A (mg/g)</th>
+              <th style="width:160px;">记录时间</th>
             </tr>
           </thead>
           <tbody id="wood-tbody"></tbody>
@@ -469,7 +475,7 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
         <span><kbd>Shift</kbd>+<kbd>Enter</kbd> 上一个</span>
       </div>
       <div class="table-wrap">
-        <table style="min-width:1350px;">
+        <table style="min-width:1520px;">
           <thead>
             <tr>
               <th style="width:45px;">#</th>
@@ -479,10 +485,11 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
               <th style="width:110px;">克重 m₂ (g)</th>
               <th style="width:120px;">灼烧后 m₃ (g)</th>
               <th style="width:120px;">4h后 m₄ (g)</th>
-              <th style="width:100px;">水分 (%)</th>
-              <th style="width:100px;">挥发分 (%)</th>
-              <th style="width:100px;">灰分 (%)</th>
-              <th style="width:110px;">固定碳 (%)</th>
+              <th style="width:95px;">水分 (%)</th>
+              <th style="width:95px;">挥发分 (%)</th>
+              <th style="width:95px;">灰分 (%)</th>
+              <th style="width:100px;">固定碳 (%)</th>
+              <th style="width:160px;">记录时间</th>
             </tr>
           </thead>
           <tbody id="carbon-tbody"></tbody>
@@ -513,15 +520,16 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
         <span><kbd>Shift</kbd>+<kbd>Enter</kbd> 上一个</span>
       </div>
       <div class="table-wrap">
-        <table style="min-width:1100px;">
+        <table style="min-width:1280px;">
           <thead>
             <tr>
               <th style="width:45px;">#</th>
-              <th style="width:140px;">空管质量 m₁ (g)</th>
-              <th style="width:150px;">加炭后重量 m₂ (g)</th>
-              <th style="width:170px;">涂抹凡士林后质量 m₃ (g)</th>
-              <th style="width:150px;">吸附后质量 m₄ (g)</th>
-              <th style="width:130px;">吸附率 A (%)</th>
+              <th style="width:130px;">空管质量 m₁ (g)</th>
+              <th style="width:140px;">加炭后重量 m₂ (g)</th>
+              <th style="width:160px;">涂抹凡士林后质量 m₃ (g)</th>
+              <th style="width:140px;">吸附后质量 m₄ (g)</th>
+              <th style="width:120px;">吸附率 A (%)</th>
+              <th style="width:160px;">记录时间</th>
             </tr>
           </thead>
           <tbody id="ctc-tbody"></tbody>
@@ -551,13 +559,14 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
         <span><kbd>Shift</kbd>+<kbd>Enter</kbd> 上一个</span>
       </div>
       <div class="table-wrap">
-        <table style="min-width:750px;">
+        <table style="min-width:930px;">
           <thead>
             <tr>
               <th style="width:55px;">#</th>
-              <th style="width:200px;">50mL试样重量 m₁ (g)</th>
-              <th style="width:200px;">过筛后重量 m₂ (g)</th>
-              <th style="width:140px;">强度 W (%)</th>
+              <th style="width:190px;">50mL试样重量 m₁ (g)</th>
+              <th style="width:190px;">过筛后重量 m₂ (g)</th>
+              <th style="width:130px;">强度 W (%)</th>
+              <th style="width:160px;">记录时间</th>
             </tr>
           </thead>
           <tbody id="strength-tbody"></tbody>
@@ -587,14 +596,15 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
         <span><kbd>Shift</kbd>+<kbd>Enter</kbd> 上一个</span>
       </div>
       <div class="table-wrap">
-        <table style="min-width:850px;">
+        <table style="min-width:1030px;">
           <thead>
             <tr>
               <th style="width:55px;">#</th>
-              <th style="width:160px;">空坩埚重量 m₁ (g)</th>
-              <th style="width:150px;">样品重量 m (g)</th>
-              <th style="width:170px;">灼烧后坩埚+灰分 m₃ (g)</th>
-              <th style="width:140px;">灰分含量 (%)</th>
+              <th style="width:155px;">空坩埚重量 m₁ (g)</th>
+              <th style="width:145px;">样品重量 m (g)</th>
+              <th style="width:165px;">灼烧后坩埚+灰分 m₃ (g)</th>
+              <th style="width:130px;">灰分含量 (%)</th>
+              <th style="width:160px;">记录时间</th>
             </tr>
           </thead>
           <tbody id="ash-tbody"></tbody>
@@ -626,15 +636,16 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
         <span><kbd>Shift</kbd>+<kbd>Enter</kbd> 上一个</span>
       </div>
       <div class="table-wrap">
-        <table style="min-width:950px;">
+        <table style="min-width:1130px;">
           <thead>
             <tr>
               <th style="width:55px;">#</th>
-              <th style="width:160px;">初始重量 m₀ (g)</th>
-              <th style="width:160px;">烘干重量 m₁ (g)</th>
-              <th style="width:130px;">水分含量 (%)</th>
-              <th style="width:150px;">100ml重量 (g)</th>
-              <th style="width:150px;">表观密度 (g/mL)</th>
+              <th style="width:155px;">初始重量 m₀ (g)</th>
+              <th style="width:155px;">烘干重量 m₁ (g)</th>
+              <th style="width:125px;">水分含量 (%)</th>
+              <th style="width:145px;">100ml重量 (g)</th>
+              <th style="width:145px;">表观密度 (g/mL)</th>
+              <th style="width:160px;">记录时间</th>
             </tr>
           </thead>
           <tbody id="moisture-tbody"></tbody>
@@ -659,7 +670,6 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
 // 密码保护
 // ============================================================
 (function() {
-  // ⚙️ 在此修改访问密码
   const ACCESS_PASSWORD = 'fhthys';
   const AUTH_KEY = 'lab_workbook_auth_v1';
 
@@ -669,18 +679,12 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
   const loginBtn = document.getElementById('loginBtn');
   const loginError = document.getElementById('loginError');
 
-  function showWorkbook() {
-    overlay.classList.add('hidden');
-    workbook.style.display = 'block';
-  }
+  function showWorkbook() { overlay.classList.add('hidden'); workbook.style.display = 'block'; }
   function showLogin() {
-    overlay.classList.remove('hidden');
-    workbook.style.display = 'none';
-    pwdInput.value = '';
-    loginError.textContent = '';
+    overlay.classList.remove('hidden'); workbook.style.display = 'none';
+    pwdInput.value = ''; loginError.textContent = '';
     setTimeout(() => pwdInput.focus(), 100);
   }
-
   function tryLogin() {
     const pwd = pwdInput.value;
     if (pwd === ACCESS_PASSWORD) {
@@ -688,8 +692,7 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
       showWorkbook();
     } else {
       loginError.textContent = '❌ 密码错误，请重试';
-      pwdInput.value = '';
-      pwdInput.focus();
+      pwdInput.value = ''; pwdInput.focus();
       pwdInput.style.transition = 'transform 0.06s';
       let n = 0;
       const shake = setInterval(() => {
@@ -698,34 +701,36 @@ input.cell-input[readonly] { background: #edf4fa; font-weight: 600; color: #0d4e
       }, 60);
     }
   }
-
   loginBtn.addEventListener('click', tryLogin);
-  pwdInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') tryLogin();
-  });
-
+  pwdInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
   document.getElementById('logoutBtn').addEventListener('click', () => {
     try { sessionStorage.removeItem(AUTH_KEY); } catch(e) {}
     showLogin();
   });
-
   let authed = false;
   try { authed = sessionStorage.getItem(AUTH_KEY) === '1'; } catch(e) {}
-  if (authed) {
-    showWorkbook();
-  } else {
-    showLogin();
-  }
+  if (authed) { showWorkbook(); } else { showLogin(); }
 })();
 
 // ============================================================
-// 通用工具：localStorage 安全包装
+// 通用工具
 // ============================================================
 const LS = {
   get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
   del(k) { try { localStorage.removeItem(k); } catch(e){} }
 };
+
+// 时间戳格式化（月-日 时:分:秒，不含年份）
+function formatTimestamp() {
+  const now = new Date();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  return `${m}-${d} ${hh}:${mm}:${ss}`;
+}
 
 // 键盘导航工厂
 function makeKeyboardNavigator(getInput, rowCount, cols) {
@@ -747,9 +752,7 @@ function makeKeyboardNavigator(getInput, rowCount, cols) {
     if (tr < 0 || tr >= rowCount) { e.preventDefault(); return; }
     const el = getInput(tr, tc);
     if (!el) { e.preventDefault(); return; }
-    e.preventDefault();
-    el.focus();
-    el.select();
+    e.preventDefault(); el.focus(); el.select();
   };
 }
 
@@ -758,15 +761,12 @@ function makeKeyboardNavigator(getInput, rowCount, cols) {
   const tabs = document.querySelectorAll('.tab');
   const sheets = document.querySelectorAll('.sheet');
   const ACTIVE_KEY = 'active_sheet_v1';
-
   function activate(name) {
     tabs.forEach(t => t.classList.toggle('active', t.dataset.sheet === name));
     sheets.forEach(s => s.classList.toggle('active', s.id === 'sheet-' + name));
     LS.set(ACTIVE_KEY, name);
   }
-
   tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.sheet)));
-
   const saved = LS.get(ACTIVE_KEY);
   if (saved && document.getElementById('sheet-' + saved)) activate(saved);
 })();
@@ -826,23 +826,38 @@ function downloadCSV(content, filename) {
     return { value: X / m };
   }
 
+  function setRowTime(row, ok) {
+    if (!row || !row.timeCell) return;
+    if (ok) {
+      row.timeCell.textContent = formatTimestamp();
+      row.timeCell.classList.remove('empty');
+    } else {
+      row.timeCell.textContent = '—';
+      row.timeCell.classList.add('empty');
+    }
+  }
+
   function calculateRow(kind, idx) {
     const rows = kind === 'high' ? rowHigh : rowLow;
     const row = rows[idx]; if (!row) return;
     const res = computeIodine(kind, row.mass.value.trim(), row.v3.value.trim());
     if (res === null) {
       row.resultCell.textContent = '—'; row.resultCell.classList.add('empty');
-      row.resultCell.classList.remove('high', 'low'); return;
+      row.resultCell.classList.remove('high', 'low');
+      setRowTime(row, false);
+      return;
     }
     if (res.error) {
       row.resultCell.textContent = res.error; row.resultCell.classList.add('empty');
-      row.resultCell.classList.remove('high', 'low'); return;
+      row.resultCell.classList.remove('high', 'low');
+      setRowTime(row, false);
+      return;
     }
-    // 保留整数
     row.resultCell.textContent = Math.round(res.value).toString();
     row.resultCell.classList.remove('empty');
     if (kind === 'high') { row.resultCell.classList.add('high'); row.resultCell.classList.remove('low'); }
     else { row.resultCell.classList.add('low'); row.resultCell.classList.remove('high'); }
+    setRowTime(row, true);
   }
 
   function buildTable(kind, tbody, rows, countEl) {
@@ -871,8 +886,11 @@ function downloadCSV(content, filename) {
       const tdRes = document.createElement('td');
       tdRes.className = 'result-cell empty'; tdRes.textContent = '—'; tr.appendChild(tdRes);
 
+      const tdTime = document.createElement('td');
+      tdTime.className = 'timestamp-cell empty'; tdTime.textContent = '—'; tr.appendChild(tdTime);
+
       tbody.appendChild(tr);
-      rows.push({ mass: inMass, v3: inV3, resultCell: tdRes });
+      rows.push({ mass: inMass, v3: inV3, resultCell: tdRes, timeCell: tdTime });
 
       inMass.addEventListener('input', () => { calculateRow(kind, i); updateCount(kind, countEl); saveData(); });
       inV3.addEventListener('input', () => { calculateRow(kind, i); updateCount(kind, countEl); saveData(); });
@@ -907,8 +925,8 @@ function downloadCSV(content, filename) {
   function saveData() {
     LS.set(STORAGE_KEY, {
       c1: c1Input.value, c2: c2Input.value, E0: E0Input.value,
-      high: rowHigh.map(r => ({ mass: r.mass.value, v3: r.v3.value })),
-      low: rowLow.map(r => ({ mass: r.mass.value, v3: r.v3.value }))
+      high: rowHigh.map(r => ({ mass: r.mass.value, v3: r.v3.value, time: r.timeCell.textContent })),
+      low: rowLow.map(r => ({ mass: r.mass.value, v3: r.v3.value, time: r.timeCell.textContent }))
     });
   }
 
@@ -923,6 +941,10 @@ function downloadCSV(content, filename) {
           rowHigh[i].mass.value = data.high[i].mass || '';
           rowHigh[i].v3.value = data.high[i].v3 || '';
           calculateRow('high', i);
+          if (data.high[i].time && data.high[i].time !== '—') {
+            rowHigh[i].timeCell.textContent = data.high[i].time;
+            rowHigh[i].timeCell.classList.remove('empty');
+          }
         }
       }
     }
@@ -932,6 +954,10 @@ function downloadCSV(content, filename) {
           rowLow[i].mass.value = data.low[i].mass || '';
           rowLow[i].v3.value = data.low[i].v3 || '';
           calculateRow('low', i);
+          if (data.low[i].time && data.low[i].time !== '—') {
+            rowLow[i].timeCell.textContent = data.low[i].time;
+            rowLow[i].timeCell.classList.remove('empty');
+          }
         }
       }
     }
@@ -945,6 +971,7 @@ function downloadCSV(content, filename) {
       rows[i].mass.value = ''; rows[i].v3.value = '';
       rows[i].resultCell.textContent = '—'; rows[i].resultCell.classList.add('empty');
       rows[i].resultCell.classList.remove('high', 'low');
+      rows[i].timeCell.textContent = '—'; rows[i].timeCell.classList.add('empty');
     }
     updateCount(kind, kind === 'high' ? countHigh : countLow);
     updateStat(); saveData();
@@ -960,14 +987,15 @@ function downloadCSV(content, filename) {
       `# c1,${c1Input.value},mol/L`, `# c2,${c2Input.value},mol/L`,
       `# V1,${V1},mL`, `# V2,${V2},mL`, `# V,${V},mL`, `# M,${MInput.value},g/mol`];
     if (kind === 'high') csv.push(`# E0,${E0Input.value},mg/g`);
-    csv.push('', '序号,样品重量m(g),消耗硫代硫酸钠V3(mL),碘值E(mg/g)');
+    csv.push('', '序号,样品重量m(g),消耗硫代硫酸钠V3(mL),碘值E(mg/g),记录时间');
     for (let i = 0; i < ROW_COUNT; i++) {
       const row = rows[i]; if (!row) continue;
       const m = row.mass.value.trim(), v3 = row.v3.value.trim();
       if (m === '' && v3 === '') continue;
       const rt = row.resultCell.textContent;
       const safe = (rt === '—' || rt === '负值' || rt === '参数无效') ? '' : rt;
-      csv.push(`${i+1},${m},${v3},${safe}`);
+      const tt = (row.timeCell.textContent === '—') ? '' : row.timeCell.textContent;
+      csv.push(`${i+1},${m},${v3},${safe},${tt}`);
     }
     downloadCSV(csv.join('\n'), `煤制活性炭碘值_${label}`);
   }
@@ -1054,26 +1082,39 @@ function downloadCSV(content, filename) {
 
   function lookupD(c) { const i = Math.round(c * 10000) - 20; return (i < 0 || i >= D_VALUES.length) ? null : D_VALUES[i]; }
 
+  function setRowTime(row, ok) {
+    if (!row || !row.timeCell) return;
+    if (ok) {
+      row.timeCell.textContent = formatTimestamp();
+      row.timeCell.classList.remove('empty');
+    } else {
+      row.timeCell.textContent = '—';
+      row.timeCell.classList.add('empty');
+    }
+  }
+
   function calcRow(i) {
     const row = rows[i]; if (!row) return;
     const wStr = row.weight.value.trim(), vStr = row.volume.value.trim();
     const c1 = parseFloat(iodineConcInput.value), c2 = parseFloat(thioConcInput.value);
     if (wStr === '' || vStr === '') {
-      row.c.value = ''; row.d.value = ''; row.res.textContent = '—'; row.res.classList.add('empty'); return;
+      row.c.value = ''; row.d.value = ''; row.res.textContent = '—'; row.res.classList.add('empty');
+      setRowTime(row, false); return;
     }
     const w = parseFloat(wStr), v2 = parseFloat(vStr);
     if (isNaN(w) || w <= 0 || isNaN(v2) || v2 < 0 || isNaN(c1) || isNaN(c2)) {
-      row.c.value = ''; row.d.value = ''; row.res.textContent = '参数无效'; row.res.classList.add('empty'); return;
+      row.c.value = ''; row.d.value = ''; row.res.textContent = '参数无效'; row.res.classList.add('empty');
+      setRowTime(row, false); return;
     }
     const c = c2 * v2 / 10; row.c.value = c.toFixed(4);
     const D = lookupD(c);
-    if (D === null) { row.d.value = '超范围'; row.res.textContent = 'c超范围'; row.res.classList.add('empty'); return; }
+    if (D === null) { row.d.value = '超范围'; row.res.textContent = 'c超范围'; row.res.classList.add('empty'); setRowTime(row, false); return; }
     row.d.value = D.toFixed(4);
     const A = 5 * (10 * c1 - 1.2 * c2 * v2) * MOLAR_MASS / w * D;
-    if (A < 0) { row.res.textContent = '负值'; row.res.classList.add('empty'); return; }
-    // 保留整数
+    if (A < 0) { row.res.textContent = '负值'; row.res.classList.add('empty'); setRowTime(row, false); return; }
     row.res.textContent = Math.round(A).toString();
     row.res.classList.remove('empty');
+    setRowTime(row, true);
   }
 
   function build() {
@@ -1082,14 +1123,15 @@ function downloadCSV(content, filename) {
       const tr = document.createElement('tr');
       const td0 = document.createElement('td'); td0.className = 'row-index'; td0.textContent = i + 1; tr.appendChild(td0);
       const mk = () => { const td = document.createElement('td'); tr.appendChild(td); return td; };
-      const tdW = mk(), tdV = mk(), tdC = mk(), tdD = mk(), tdR = mk();
+      const tdW = mk(), tdV = mk(), tdC = mk(), tdD = mk(), tdR = mk(), tdT = mk();
       const inW = document.createElement('input'); inW.type='number'; inW.className='cell-input'; inW.step='0.0001'; inW.min='0'; inW.placeholder='0.5000'; tdW.appendChild(inW);
       const inV = document.createElement('input'); inV.type='number'; inV.className='cell-input'; inV.step='0.01'; inV.min='0'; inV.placeholder='例如 4.00'; tdV.appendChild(inV);
       const inC = document.createElement('input'); inC.type='text'; inC.className='cell-input'; inC.readOnly=true; inC.placeholder='自动计算'; tdC.appendChild(inC);
       const inD = document.createElement('input'); inD.type='text'; inD.className='cell-input'; inD.style.background='#e8f6ef'; inD.style.color='#0b6b3a'; inD.readOnly=true; inD.placeholder='自动查表'; tdD.appendChild(inD);
       tdR.className = 'result-cell empty'; tdR.textContent = '—';
+      tdT.className = 'timestamp-cell empty'; tdT.textContent = '—';
       tableBody.appendChild(tr);
-      rows.push({ weight: inW, volume: inV, c: inC, d: inD, res: tdR });
+      rows.push({ weight: inW, volume: inV, c: inC, d: inD, res: tdR, timeCell: tdT });
       inW.addEventListener('input', () => { calcRow(i); save(); });
       inV.addEventListener('input', () => { calcRow(i); save(); });
       const nav = makeKeyboardNavigator((r,c) => {
@@ -1112,7 +1154,7 @@ function downloadCSV(content, filename) {
   function save() {
     LS.set(KEY, {
       iodineConc: iodineConcInput.value, thioConc: thioConcInput.value,
-      rows: rows.map(r => ({ weight: r.weight.value, volume: r.volume.value }))
+      rows: rows.map(r => ({ weight: r.weight.value, volume: r.volume.value, time: r.timeCell.textContent }))
     });
   }
   function load() {
@@ -1125,6 +1167,10 @@ function downloadCSV(content, filename) {
           rows[i].weight.value = d.rows[i].weight || '';
           rows[i].volume.value = d.rows[i].volume || '';
           calcRow(i);
+          if (d.rows[i].time && d.rows[i].time !== '—') {
+            rows[i].timeCell.textContent = d.rows[i].time;
+            rows[i].timeCell.classList.remove('empty');
+          }
         }
       }
     }
@@ -1136,6 +1182,7 @@ function downloadCSV(content, filename) {
       rows[i].weight.value = ''; rows[i].volume.value = '';
       rows[i].c.value = ''; rows[i].d.value = '';
       rows[i].res.textContent = '—'; rows[i].res.classList.add('empty');
+      rows[i].timeCell.textContent = '—'; rows[i].timeCell.classList.add('empty');
     }
     LS.del(KEY); updateStat();
     const b = $('clearAllBtn'); const o = b.innerHTML; b.innerHTML = '✅ 已清空'; setTimeout(() => b.innerHTML = o, 900);
@@ -1144,14 +1191,15 @@ function downloadCSV(content, filename) {
     let csv = ['# 木质活性炭碘值计算导出 (GB/T 12496.8)',
       `# 碘液浓度 c1,${iodineConcInput.value},mol/L`,
       `# 硫代硫酸钠浓度 c2,${thioConcInput.value},mol/L`, '',
-      '序号,样品重量m(g),硫代消耗V2(mL),剩余浓度c(mol/L),校正因子D,碘值A(mg/g)'];
+      '序号,样品重量m(g),硫代消耗V2(mL),剩余浓度c(mol/L),校正因子D,碘值A(mg/g),记录时间'];
     for (let i = 0; i < ROW_COUNT; i++) {
       const r = rows[i]; if (!r) continue;
       const w = r.weight.value.trim(), v = r.volume.value.trim();
       if (w === '' && v === '') continue;
       const rt = r.res.textContent;
       const safe = (rt === '—' || rt === '负值' || rt === '参数无效' || rt === 'c超范围') ? '' : rt;
-      csv.push(`${i+1},${w},${v},${r.c.value},${r.d.value},${safe}`);
+      const tt = (r.timeCell.textContent === '—') ? '' : r.timeCell.textContent;
+      csv.push(`${i+1},${w},${v},${r.c.value},${r.d.value},${safe},${tt}`);
     }
     downloadCSV(csv.join('\n'), '木质活性炭碘值');
   }
@@ -1171,6 +1219,17 @@ function downloadCSV(content, filename) {
   const $ = id => document.getElementById('carbon-' + id);
   const tableBody = $('tbody'), statInfo = $('statInfo');
   const rows = [];
+
+  function setRowTime(row, ok) {
+    if (!row || !row.timeCell) return;
+    if (ok) {
+      row.timeCell.textContent = formatTimestamp();
+      row.timeCell.classList.remove('empty');
+    } else {
+      row.timeCell.textContent = '—';
+      row.timeCell.classList.add('empty');
+    }
+  }
 
   function calcRow(i) {
     const r = rows[i]; if (!r) return;
@@ -1196,9 +1255,19 @@ function downloadCSV(content, filename) {
 
     if (moisture !== null && volatile_ !== null && ash !== null) {
       const fc = 100 - moisture - volatile_ - ash;
-      if (fc >= 0) { r.fcCell.textContent = fc.toFixed(2) + ' %'; r.fcCell.classList.remove('empty'); }
-      else { r.fcCell.textContent = '数据异常'; r.fcCell.classList.add('empty'); }
-    } else { r.fcCell.textContent = '—'; r.fcCell.classList.add('empty'); }
+      if (fc >= 0) {
+        r.fcCell.textContent = fc.toFixed(2) + ' %';
+        r.fcCell.classList.remove('empty');
+        setRowTime(r, true);
+      } else {
+        r.fcCell.textContent = '数据异常';
+        r.fcCell.classList.add('empty');
+        setRowTime(r, false);
+      }
+    } else {
+      r.fcCell.textContent = '—'; r.fcCell.classList.add('empty');
+      setRowTime(r, false);
+    }
   }
 
   function build() {
@@ -1222,10 +1291,14 @@ function downloadCSV(content, filename) {
         td.className = 'result-cell ' + classes[j] + ' empty'; td.textContent = '—';
         tr.appendChild(td); resultCells.push(td);
       }
+      const tdT = document.createElement('td');
+      tdT.className = 'timestamp-cell empty'; tdT.textContent = '—';
+      tr.appendChild(tdT);
       tableBody.appendChild(tr);
       const row = {
         initial: inputs[0], dry: inputs[1], m1: inputs[2], m2: inputs[3], m3: inputs[4], m4: inputs[5],
-        moistureCell: resultCells[0], volatileCell: resultCells[1], ashCell: resultCells[2], fcCell: resultCells[3]
+        moistureCell: resultCells[0], volatileCell: resultCells[1], ashCell: resultCells[2], fcCell: resultCells[3],
+        timeCell: tdT
       };
       rows.push(row);
       inputs.forEach(inp => inp.addEventListener('input', () => { calcRow(i); save(); }));
@@ -1249,7 +1322,8 @@ function downloadCSV(content, filename) {
   function recalcAll() { for (let i = 0; i < ROW_COUNT; i++) calcRow(i); updateStat(); }
   function save() {
     LS.set(KEY, { rows: rows.map(r => ({
-      initial: r.initial.value, dry: r.dry.value, m1: r.m1.value, m2: r.m2.value, m3: r.m3.value, m4: r.m4.value
+      initial: r.initial.value, dry: r.dry.value, m1: r.m1.value, m2: r.m2.value, m3: r.m3.value, m4: r.m4.value,
+      time: r.timeCell.textContent
     })) });
   }
   function load() {
@@ -1259,6 +1333,10 @@ function downloadCSV(content, filename) {
       if (!r || !s) continue;
       ['initial','dry','m1','m2','m3','m4'].forEach(k => { if (s[k] !== undefined) r[k].value = s[k]; });
       calcRow(i);
+      if (s.time && s.time !== '—') {
+        r.timeCell.textContent = s.time;
+        r.timeCell.classList.remove('empty');
+      }
     }
     updateStat();
   }
@@ -1267,6 +1345,7 @@ function downloadCSV(content, filename) {
       const r = rows[i]; if (!r) continue;
       [r.initial, r.dry, r.m1, r.m2, r.m3, r.m4].forEach(x => x.value = '');
       [r.moistureCell, r.volatileCell, r.ashCell, r.fcCell].forEach(c => { c.textContent = '—'; c.classList.add('empty'); });
+      r.timeCell.textContent = '—'; r.timeCell.classList.add('empty');
     }
     LS.del(KEY); updateStat();
     const b = $('clearAllBtn'); const o = b.innerHTML; b.innerHTML = '✅ 已清空'; setTimeout(() => b.innerHTML = o, 900);
@@ -1274,12 +1353,13 @@ function downloadCSV(content, filename) {
   function exportCSV() {
     let csv = ['# 炭化料工业分析导出',
       '# 水分=(初始-烘干)/初始×100% | 挥发分=(m2+m1-m3)/m2×100% | 灰分=(m4-m1)/m2×100% | 固定碳=100%-水分-挥发分-灰分', '',
-      '序号,初始重量(g),烘干重量(g),空坩埚m1(g),克重m2(g),灼烧后m3(g),4h后m4(g),水分(%),挥发分(%),灰分(%),固定碳(%)'];
+      '序号,初始重量(g),烘干重量(g),空坩埚m1(g),克重m2(g),灼烧后m3(g),4h后m4(g),水分(%),挥发分(%),灰分(%),固定碳(%),记录时间'];
     for (let i = 0; i < ROW_COUNT; i++) {
       const r = rows[i]; if (!r) continue;
       if ([r.initial,r.dry,r.m1,r.m2,r.m3,r.m4].every(x => x.value.trim() === '')) continue;
       const get = c => c.textContent.replace(' %', '').replace('数据异常','').replace('—','');
-      csv.push(`${i+1},${r.initial.value},${r.dry.value},${r.m1.value},${r.m2.value},${r.m3.value},${r.m4.value},${get(r.moistureCell)},${get(r.volatileCell)},${get(r.ashCell)},${get(r.fcCell)}`);
+      const tt = (r.timeCell.textContent === '—') ? '' : r.timeCell.textContent;
+      csv.push(`${i+1},${r.initial.value},${r.dry.value},${r.m1.value},${r.m2.value},${r.m3.value},${r.m4.value},${get(r.moistureCell)},${get(r.volatileCell)},${get(r.ashCell)},${get(r.fcCell)},${tt}`);
     }
     downloadCSV(csv.join('\n'), '炭化料工业分析');
   }
@@ -1298,24 +1378,39 @@ function downloadCSV(content, filename) {
   const tableBody = $('tbody'), statInfo = $('statInfo');
   const rows = [];
 
+  function setRowTime(row, ok) {
+    if (!row || !row.timeCell) return;
+    if (ok) {
+      row.timeCell.textContent = formatTimestamp();
+      row.timeCell.classList.remove('empty');
+    } else {
+      row.timeCell.textContent = '—';
+      row.timeCell.classList.add('empty');
+    }
+  }
+
   function calcRow(i) {
     const r = rows[i]; if (!r) return;
     const [s1, s2, s3, s4] = [r.m1.value.trim(), r.m2.value.trim(), r.m3.value.trim(), r.m4.value.trim()];
     if (s1 === '' && s2 === '' && s3 === '' && s4 === '') {
-      r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('low', 'pass'); return;
+      r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('low', 'pass');
+      setRowTime(r, false); return;
     }
     const m1 = parseFloat(s1), m2 = parseFloat(s2), m3 = parseFloat(s3), m4 = parseFloat(s4);
     if (isNaN(m1) || m1 < 0 || isNaN(m2) || m2 <= 0 || isNaN(m3) || m3 <= 0 || isNaN(m4) || m4 < 0) {
-      r.res.textContent = '参数无效'; r.res.classList.add('empty'); r.res.classList.remove('low','pass'); return;
+      r.res.textContent = '参数无效'; r.res.classList.add('empty'); r.res.classList.remove('low','pass');
+      setRowTime(r, false); return;
     }
     if (m2 <= m1 || m3 < m2 || m4 <= m3) {
-      r.res.textContent = '数据异常'; r.res.classList.add('empty'); r.res.classList.remove('low','pass'); return;
+      r.res.textContent = '数据异常'; r.res.classList.add('empty'); r.res.classList.remove('low','pass');
+      setRowTime(r, false); return;
     }
     const A = (m4 - m3) / (m2 - m1) * 100;
     r.res.textContent = A.toFixed(2) + ' %';
     r.res.classList.remove('empty');
     if (A < 60) { r.res.classList.add('low'); r.res.classList.remove('pass'); }
     else { r.res.classList.add('pass'); r.res.classList.remove('low'); }
+    setRowTime(r, true);
   }
 
   function build() {
@@ -1335,8 +1430,11 @@ function downloadCSV(content, filename) {
       const tdR = document.createElement('td');
       tdR.className = 'result-cell empty'; tdR.textContent = '—';
       tr.appendChild(tdR);
+      const tdT = document.createElement('td');
+      tdT.className = 'timestamp-cell empty'; tdT.textContent = '—';
+      tr.appendChild(tdT);
       tableBody.appendChild(tr);
-      const row = { m1: inputs[0], m2: inputs[1], m3: inputs[2], m4: inputs[3], res: tdR };
+      const row = { m1: inputs[0], m2: inputs[1], m3: inputs[2], m4: inputs[3], res: tdR, timeCell: tdT };
       rows.push(row);
       inputs.forEach(inp => inp.addEventListener('input', () => { calcRow(i); save(); }));
       const nav = makeKeyboardNavigator((r,c) => {
@@ -1357,7 +1455,7 @@ function downloadCSV(content, filename) {
     statInfo.textContent = `${n} / ${ROW_COUNT} 个样品已填写`;
   }
   function recalcAll() { for (let i = 0; i < ROW_COUNT; i++) calcRow(i); updateStat(); }
-  function save() { LS.set(KEY, { rows: rows.map(r => ({ m1: r.m1.value, m2: r.m2.value, m3: r.m3.value, m4: r.m4.value })) }); }
+  function save() { LS.set(KEY, { rows: rows.map(r => ({ m1: r.m1.value, m2: r.m2.value, m3: r.m3.value, m4: r.m4.value, time: r.timeCell.textContent })) }); }
   function load() {
     const d = LS.get(KEY); if (!d || !Array.isArray(d.rows)) return;
     for (let i = 0; i < ROW_COUNT && i < d.rows.length; i++) {
@@ -1365,6 +1463,7 @@ function downloadCSV(content, filename) {
       if (!r || !s) continue;
       ['m1','m2','m3','m4'].forEach(k => { if (s[k] !== undefined) r[k].value = s[k]; });
       calcRow(i);
+      if (s.time && s.time !== '—') { r.timeCell.textContent = s.time; r.timeCell.classList.remove('empty'); }
     }
     updateStat();
   }
@@ -1373,6 +1472,7 @@ function downloadCSV(content, filename) {
       const r = rows[i]; if (!r) continue;
       [r.m1, r.m2, r.m3, r.m4].forEach(x => x.value = '');
       r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('low','pass');
+      r.timeCell.textContent = '—'; r.timeCell.classList.add('empty');
     }
     LS.del(KEY); updateStat();
     const b = $('clearAllBtn'); const o = b.innerHTML; b.innerHTML = '✅ 已清空'; setTimeout(() => b.innerHTML = o, 900);
@@ -1380,13 +1480,14 @@ function downloadCSV(content, filename) {
   function exportCSV() {
     let csv = ['# 活性炭四氯化碳吸附率导出 (GB/T 12496.5-1999)',
       '# A(%) = (m4 - m3) / (m2 - m1) × 100%', '',
-      '序号,空管质量m1(g),加炭后重量m2(g),涂抹凡士林后质量m3(g),吸附后质量m4(g),吸附率A(%)'];
+      '序号,空管质量m1(g),加炭后重量m2(g),涂抹凡士林后质量m3(g),吸附后质量m4(g),吸附率A(%),记录时间'];
     for (let i = 0; i < ROW_COUNT; i++) {
       const r = rows[i]; if (!r) continue;
       if ([r.m1,r.m2,r.m3,r.m4].every(x => x.value.trim() === '')) continue;
       const rt = r.res.textContent;
       const safe = (rt === '—' || rt === '数据异常' || rt === '参数无效') ? '' : rt.replace(' %','');
-      csv.push(`${i+1},${r.m1.value},${r.m2.value},${r.m3.value},${r.m4.value},${safe}`);
+      const tt = (r.timeCell.textContent === '—') ? '' : r.timeCell.textContent;
+      csv.push(`${i+1},${r.m1.value},${r.m2.value},${r.m3.value},${r.m4.value},${safe},${tt}`);
     }
     downloadCSV(csv.join('\n'), '四氯化碳吸附率');
   }
@@ -1405,16 +1506,37 @@ function downloadCSV(content, filename) {
   const tableBody = $('tbody'), statInfo = $('statInfo');
   const rows = [];
 
+  function setRowTime(row, ok) {
+    if (!row || !row.timeCell) return;
+    if (ok) {
+      row.timeCell.textContent = formatTimestamp();
+      row.timeCell.classList.remove('empty');
+    } else {
+      row.timeCell.textContent = '—';
+      row.timeCell.classList.add('empty');
+    }
+  }
+
   function calcRow(i) {
     const r = rows[i]; if (!r) return;
     const s1 = r.m1.value.trim(), s2 = r.m2.value.trim();
-    if (s1 === '' || s2 === '') { r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('low'); return; }
+    if (s1 === '' || s2 === '') {
+      r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('low');
+      setRowTime(r, false); return;
+    }
     const m1 = parseFloat(s1), m2 = parseFloat(s2);
-    if (isNaN(m1) || m1 <= 0 || isNaN(m2) || m2 < 0) { r.res.textContent = '参数无效'; r.res.classList.add('empty'); r.res.classList.remove('low'); return; }
-    if (m2 > m1) { r.res.textContent = '数据异常'; r.res.classList.add('empty'); r.res.classList.remove('low'); return; }
+    if (isNaN(m1) || m1 <= 0 || isNaN(m2) || m2 < 0) {
+      r.res.textContent = '参数无效'; r.res.classList.add('empty'); r.res.classList.remove('low');
+      setRowTime(r, false); return;
+    }
+    if (m2 > m1) {
+      r.res.textContent = '数据异常'; r.res.classList.add('empty'); r.res.classList.remove('low');
+      setRowTime(r, false); return;
+    }
     const s = m2 / m1 * 100;
     r.res.textContent = s.toFixed(2) + ' %'; r.res.classList.remove('empty');
     if (s < 95) r.res.classList.add('low'); else r.res.classList.remove('low');
+    setRowTime(r, true);
   }
 
   function build() {
@@ -1427,8 +1549,9 @@ function downloadCSV(content, filename) {
       const in2 = document.createElement('input'); in2.type='number'; in2.className='cell-input'; in2.step='0.01'; in2.min='0'; in2.placeholder='例如 24.50'; td2.appendChild(in2);
       tr.appendChild(td1); tr.appendChild(td2);
       const tdR = document.createElement('td'); tdR.className='result-cell strength empty'; tdR.textContent = '—'; tr.appendChild(tdR);
+      const tdT = document.createElement('td'); tdT.className='timestamp-cell empty'; tdT.textContent = '—'; tr.appendChild(tdT);
       tableBody.appendChild(tr);
-      const row = { m1: in1, m2: in2, res: tdR };
+      const row = { m1: in1, m2: in2, res: tdR, timeCell: tdT };
       rows.push(row);
       in1.addEventListener('input', () => { calcRow(i); save(); });
       in2.addEventListener('input', () => { calcRow(i); save(); });
@@ -1448,7 +1571,7 @@ function downloadCSV(content, filename) {
     statInfo.textContent = `${n} / ${ROW_COUNT} 个样品已填写`;
   }
   function recalcAll() { for (let i = 0; i < ROW_COUNT; i++) calcRow(i); updateStat(); }
-  function save() { LS.set(KEY, { rows: rows.map(r => ({ m1: r.m1.value, m2: r.m2.value })) }); }
+  function save() { LS.set(KEY, { rows: rows.map(r => ({ m1: r.m1.value, m2: r.m2.value, time: r.timeCell.textContent })) }); }
   function load() {
     const d = LS.get(KEY); if (!d || !Array.isArray(d.rows)) return;
     for (let i = 0; i < ROW_COUNT && i < d.rows.length; i++) {
@@ -1457,6 +1580,7 @@ function downloadCSV(content, filename) {
       if (s.m1 !== undefined) r.m1.value = s.m1;
       if (s.m2 !== undefined) r.m2.value = s.m2;
       calcRow(i);
+      if (s.time && s.time !== '—') { r.timeCell.textContent = s.time; r.timeCell.classList.remove('empty'); }
     }
     updateStat();
   }
@@ -1465,19 +1589,21 @@ function downloadCSV(content, filename) {
       const r = rows[i]; if (!r) continue;
       r.m1.value = ''; r.m2.value = '';
       r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('low');
+      r.timeCell.textContent = '—'; r.timeCell.classList.add('empty');
     }
     LS.del(KEY); updateStat();
     const b = $('clearAllBtn'); const o = b.innerHTML; b.innerHTML = '✅ 已清空'; setTimeout(() => b.innerHTML = o, 900);
   }
   function exportCSV() {
     let csv = ['# 活性炭强度导出 (GB/T 12496.6-1999)', '# W(%) = m2 / m1 × 100%', '',
-      '序号,50mL试样重量m1(g),过筛后重量m2(g),强度W(%)'];
+      '序号,50mL试样重量m1(g),过筛后重量m2(g),强度W(%),记录时间'];
     for (let i = 0; i < ROW_COUNT; i++) {
       const r = rows[i]; if (!r) continue;
       if (r.m1.value.trim() === '' && r.m2.value.trim() === '') continue;
       const rt = r.res.textContent;
       const safe = (rt === '—' || rt === '数据异常' || rt === '参数无效') ? '' : rt.replace(' %','');
-      csv.push(`${i+1},${r.m1.value},${r.m2.value},${safe}`);
+      const tt = (r.timeCell.textContent === '—') ? '' : r.timeCell.textContent;
+      csv.push(`${i+1},${r.m1.value},${r.m2.value},${safe},${tt}`);
     }
     downloadCSV(csv.join('\n'), '活性炭强度');
   }
@@ -1496,17 +1622,38 @@ function downloadCSV(content, filename) {
   const tableBody = $('tbody'), statInfo = $('statInfo');
   const rows = [];
 
+  function setRowTime(row, ok) {
+    if (!row || !row.timeCell) return;
+    if (ok) {
+      row.timeCell.textContent = formatTimestamp();
+      row.timeCell.classList.remove('empty');
+    } else {
+      row.timeCell.textContent = '—';
+      row.timeCell.classList.add('empty');
+    }
+  }
+
   function calcRow(i) {
     const r = rows[i]; if (!r) return;
     const cS = r.crucible.value.trim(), sS = r.sample.value.trim(), aS = r.ashed.value.trim();
-    if (cS === '' && sS === '' && aS === '') { r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('high'); return; }
+    if (cS === '' && sS === '' && aS === '') {
+      r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('high');
+      setRowTime(r, false); return;
+    }
     const c = parseFloat(cS), s = parseFloat(sS), a = parseFloat(aS);
-    if (isNaN(c) || c < 0 || isNaN(s) || s <= 0 || isNaN(a) || a < 0) { r.res.textContent = '参数无效'; r.res.classList.add('empty'); r.res.classList.remove('high'); return; }
+    if (isNaN(c) || c < 0 || isNaN(s) || s <= 0 || isNaN(a) || a < 0) {
+      r.res.textContent = '参数无效'; r.res.classList.add('empty'); r.res.classList.remove('high');
+      setRowTime(r, false); return;
+    }
     const am = a - c;
-    if (am < 0) { r.res.textContent = '数据异常'; r.res.classList.add('empty'); r.res.classList.remove('high'); return; }
+    if (am < 0) {
+      r.res.textContent = '数据异常'; r.res.classList.add('empty'); r.res.classList.remove('high');
+      setRowTime(r, false); return;
+    }
     const ash = am / s * 100;
     r.res.textContent = ash.toFixed(2) + ' %'; r.res.classList.remove('empty');
     if (ash > 10) r.res.classList.add('high'); else r.res.classList.remove('high');
+    setRowTime(r, true);
   }
   function build() {
     tableBody.innerHTML = ''; rows.length = 0;
@@ -1525,8 +1672,11 @@ function downloadCSV(content, filename) {
       const tdR = document.createElement('td');
       tdR.className = 'result-cell ash empty'; tdR.textContent = '—';
       tr.appendChild(tdR);
+      const tdT = document.createElement('td');
+      tdT.className = 'timestamp-cell empty'; tdT.textContent = '—';
+      tr.appendChild(tdT);
       tableBody.appendChild(tr);
-      const row = { crucible: inputs[0], sample: inputs[1], ashed: inputs[2], res: tdR };
+      const row = { crucible: inputs[0], sample: inputs[1], ashed: inputs[2], res: tdR, timeCell: tdT };
       rows.push(row);
       inputs.forEach(inp => inp.addEventListener('input', () => { calcRow(i); save(); }));
       const nav = makeKeyboardNavigator((r,c) => {
@@ -1544,7 +1694,7 @@ function downloadCSV(content, filename) {
     statInfo.textContent = `${n} / ${ROW_COUNT} 个样品已填写`;
   }
   function recalcAll() { for (let i = 0; i < ROW_COUNT; i++) calcRow(i); updateStat(); }
-  function save() { LS.set(KEY, { rows: rows.map(r => ({ crucible: r.crucible.value, sample: r.sample.value, ashed: r.ashed.value })) }); }
+  function save() { LS.set(KEY, { rows: rows.map(r => ({ crucible: r.crucible.value, sample: r.sample.value, ashed: r.ashed.value, time: r.timeCell.textContent })) }); }
   function load() {
     const d = LS.get(KEY); if (!d || !Array.isArray(d.rows)) return;
     for (let i = 0; i < ROW_COUNT && i < d.rows.length; i++) {
@@ -1552,6 +1702,7 @@ function downloadCSV(content, filename) {
       if (!r || !s) continue;
       ['crucible','sample','ashed'].forEach(k => { if (s[k] !== undefined) r[k].value = s[k]; });
       calcRow(i);
+      if (s.time && s.time !== '—') { r.timeCell.textContent = s.time; r.timeCell.classList.remove('empty'); }
     }
     updateStat();
   }
@@ -1560,19 +1711,21 @@ function downloadCSV(content, filename) {
       const r = rows[i]; if (!r) continue;
       r.crucible.value = ''; r.sample.value = ''; r.ashed.value = '';
       r.res.textContent = '—'; r.res.classList.add('empty'); r.res.classList.remove('high');
+      r.timeCell.textContent = '—'; r.timeCell.classList.add('empty');
     }
     LS.del(KEY); updateStat();
     const b = $('clearAllBtn'); const o = b.innerHTML; b.innerHTML = '✅ 已清空'; setTimeout(() => b.innerHTML = o, 900);
   }
   function exportCSV() {
     let csv = ['# 活性炭灰分导出 (GB/T 12496.3-1999)', '# 灰分 = (m3 - m1) / m × 100%', '',
-      '序号,空坩埚m1(g),样品重量m(g),灼烧后m3(g),灰分含量(%)'];
+      '序号,空坩埚m1(g),样品重量m(g),灼烧后m3(g),灰分含量(%),记录时间'];
     for (let i = 0; i < ROW_COUNT; i++) {
       const r = rows[i]; if (!r) continue;
       if (r.crucible.value.trim() === '' && r.sample.value.trim() === '' && r.ashed.value.trim() === '') continue;
       const rt = r.res.textContent;
       const safe = (rt === '—' || rt === '数据异常' || rt === '参数无效') ? '' : rt.replace(' %','');
-      csv.push(`${i+1},${r.crucible.value},${r.sample.value},${r.ashed.value},${safe}`);
+      const tt = (r.timeCell.textContent === '—') ? '' : r.timeCell.textContent;
+      csv.push(`${i+1},${r.crucible.value},${r.sample.value},${r.ashed.value},${safe},${tt}`);
     }
     downloadCSV(csv.join('\n'), '活性炭灰分');
   }
@@ -1590,6 +1743,17 @@ function downloadCSV(content, filename) {
   const $ = id => document.getElementById('moisture-' + id);
   const tableBody = $('tbody'), statInfo = $('statInfo');
   const rows = [];
+
+  function setRowTime(row, ok) {
+    if (!row || !row.timeCell) return;
+    if (ok) {
+      row.timeCell.textContent = formatTimestamp();
+      row.timeCell.classList.remove('empty');
+    } else {
+      row.timeCell.textContent = '—';
+      row.timeCell.classList.add('empty');
+    }
+  }
 
   function calcRow(i) {
     const r = rows[i]; if (!r) return;
@@ -1611,8 +1775,15 @@ function downloadCSV(content, filename) {
       if (!isNaN(w) && w > 0) {
         const bulk = w * (1 - moisture / 100) / 100;
         r.bulkCell.textContent = bulk.toFixed(3) + ' g/mL'; r.bulkCell.classList.remove('empty');
-      } else { r.bulkCell.textContent = '参数无效'; r.bulkCell.classList.add('empty'); }
-    } else { r.bulkCell.textContent = '—'; r.bulkCell.classList.add('empty'); }
+        setRowTime(r, true);
+      } else {
+        r.bulkCell.textContent = '参数无效'; r.bulkCell.classList.add('empty');
+        setRowTime(r, false);
+      }
+    } else {
+      r.bulkCell.textContent = '—'; r.bulkCell.classList.add('empty');
+      setRowTime(r, false);
+    }
   }
   function build() {
     tableBody.innerHTML = ''; rows.length = 0;
@@ -1632,8 +1803,9 @@ function downloadCSV(content, filename) {
         }
       }
       const tdR = document.createElement('td'); tdR.className = 'result-cell bulk empty'; tdR.textContent = '—'; tr.appendChild(tdR);
+      const tdT = document.createElement('td'); tdT.className = 'timestamp-cell empty'; tdT.textContent = '—'; tr.appendChild(tdT);
       tableBody.appendChild(tr);
-      const row = { initial: inputs[0], dry: inputs[1], w100: inputs[2], moistureCell: tr.children[3], bulkCell: tdR };
+      const row = { initial: inputs[0], dry: inputs[1], w100: inputs[2], moistureCell: tr.children[3], bulkCell: tdR, timeCell: tdT };
       rows.push(row);
       inputs.forEach(inp => inp.addEventListener('input', () => { calcRow(i); save(); }));
       const nav = makeKeyboardNavigator((r,c) => {
@@ -1651,7 +1823,7 @@ function downloadCSV(content, filename) {
     statInfo.textContent = `${n} / ${ROW_COUNT} 个样品已填写`;
   }
   function recalcAll() { for (let i = 0; i < ROW_COUNT; i++) calcRow(i); updateStat(); }
-  function save() { LS.set(KEY, { rows: rows.map(r => ({ initial: r.initial.value, dry: r.dry.value, w100: r.w100.value })) }); }
+  function save() { LS.set(KEY, { rows: rows.map(r => ({ initial: r.initial.value, dry: r.dry.value, w100: r.w100.value, time: r.timeCell.textContent })) }); }
   function load() {
     const d = LS.get(KEY); if (!d || !Array.isArray(d.rows)) return;
     for (let i = 0; i < ROW_COUNT && i < d.rows.length; i++) {
@@ -1661,6 +1833,7 @@ function downloadCSV(content, filename) {
       if (s.dry !== undefined) r.dry.value = s.dry;
       if (s.w100 !== undefined) r.w100.value = s.w100;
       calcRow(i);
+      if (s.time && s.time !== '—') { r.timeCell.textContent = s.time; r.timeCell.classList.remove('empty'); }
     }
     updateStat();
   }
@@ -1670,6 +1843,7 @@ function downloadCSV(content, filename) {
       r.initial.value = ''; r.dry.value = ''; r.w100.value = '';
       r.moistureCell.textContent = '—'; r.moistureCell.classList.add('empty'); r.moistureCell.classList.remove('high');
       r.bulkCell.textContent = '—'; r.bulkCell.classList.add('empty');
+      r.timeCell.textContent = '—'; r.timeCell.classList.add('empty');
     }
     LS.del(KEY); updateStat();
     const b = $('clearAllBtn'); const o = b.innerHTML; b.innerHTML = '✅ 已清空'; setTimeout(() => b.innerHTML = o, 900);
@@ -1678,13 +1852,14 @@ function downloadCSV(content, filename) {
     let csv = ['# 水分与表观密度导出',
       '# 水分：GB/T 12496.4-1999 | 表观密度：GB/T 12496.1-1999',
       '# 水分 = (m0 - m1) / m0 × 100% | 表观密度 = 100ml重量 × (1 - 水分%) / 100', '',
-      '序号,初始重量m0(g),烘干重量m1(g),水分含量(%),100ml重量(g),表观密度(g/mL)'];
+      '序号,初始重量m0(g),烘干重量m1(g),水分含量(%),100ml重量(g),表观密度(g/mL),记录时间'];
     for (let i = 0; i < ROW_COUNT; i++) {
       const r = rows[i]; if (!r) continue;
       if (r.initial.value.trim() === '' && r.dry.value.trim() === '' && r.w100.value.trim() === '') continue;
       const getM = c => { const t = c.textContent; return (t === '—' || t === '数据异常' || t === '参数无效') ? '' : t.replace(' %',''); };
       const getB = c => { const t = c.textContent; return (t === '—' || t === '参数无效') ? '' : t.replace(' g/mL',''); };
-      csv.push(`${i+1},${r.initial.value},${r.dry.value},${getM(r.moistureCell)},${r.w100.value},${getB(r.bulkCell)}`);
+      const tt = (r.timeCell.textContent === '—') ? '' : r.timeCell.textContent;
+      csv.push(`${i+1},${r.initial.value},${r.dry.value},${getM(r.moistureCell)},${r.w100.value},${getB(r.bulkCell)},${tt}`);
     }
     downloadCSV(csv.join('\n'), '水分与表观密度');
   }
@@ -1695,12 +1870,11 @@ function downloadCSV(content, filename) {
 })();
 
 /* ============================================================
-   输入框已填高亮：用户输入自动加 .filled 类
+   输入框已填高亮
    ============================================================ */
 (function() {
   function syncFilled(el) {
     if (!el || !el.classList) return;
-    // 只读输入框（剩余浓度c、校正因子D等）保持原样式
     if (el.readOnly) {
       el.classList.remove('filled');
       return;
@@ -1713,22 +1887,53 @@ function downloadCSV(content, filename) {
     document.querySelectorAll('input.cell-input').forEach(syncFilled);
   }
 
-  // 用户输入时立即同步
   document.addEventListener('input', function(e) {
     if (e.target && e.target.classList && e.target.classList.contains('cell-input')) {
       syncFilled(e.target);
     }
   }, true);
 
-  // 任意按钮点击后延迟同步一次（覆盖清空、重新计算、加载数据后的状态）
   document.addEventListener('click', function() {
     setTimeout(syncAllFilled, 20);
   }, true);
 
-  // 页面加载完成后统一同步（覆盖 localStorage 恢复的数据）
   window.addEventListener('load', syncAllFilled);
   setTimeout(syncAllFilled, 300);
   setTimeout(syncAllFilled, 800);
+})();
+
+/* ============================================================
+   最近计算出结果的行高亮
+   ============================================================ */
+(function() {
+  function updateRecentRow(tr) {
+    if (!tr || !tr.parentElement) return;
+    const tbody = tr.parentElement;
+    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('recent-row'));
+    const timeCell = tr.querySelector('.timestamp-cell');
+    if (timeCell && timeCell.textContent && timeCell.textContent.trim() !== '—') {
+      tr.classList.add('recent-row');
+    }
+  }
+
+  function clearRecentRows() {
+    document.querySelectorAll('tr.recent-row').forEach(r => r.classList.remove('recent-row'));
+  }
+
+  // 监听输入事件（冒泡阶段，此时各表计算处理函数已执行）
+  document.addEventListener('input', function(e) {
+    if (!e.target || !e.target.classList) return;
+    if (!e.target.classList.contains('cell-input')) return;
+    const tr = e.target.closest('tr');
+    if (!tr) return;
+    // 用 setTimeout 确保在计算处理函数之后执行
+    setTimeout(() => updateRecentRow(tr), 0);
+  }, false);
+
+  // 页面加载完成时清除高亮（避免刷新后残留）
+  window.addEventListener('load', () => {
+    setTimeout(clearRecentRows, 100);
+  });
 })();
 </script>
 </body>
